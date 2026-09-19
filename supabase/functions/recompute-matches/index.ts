@@ -1,20 +1,14 @@
 // Supabase Edge Function: recompute-matches
 //
 // ⚠️ ÖNEMLİ, AÇIKÇA BELİRTİLMESİ GEREKEN SINIRLAMA (uydurulmadı, gizlenmedi):
-// matching_config.semantic_weight (%60) pgvector embedding gerektirir.
-// Anthropic Claude'un embedding endpoint'i YOKTUR; OpenAI/Gemini bu projede
-// kesinlikle kullanılamaz (kullanıcı talimatı). Bir embedding sağlayıcısı
-// (ör. Voyage AI) onaylanana kadar semantic bileşeni burada HESAPLANMAZ (0
-// olarak işaretlenir, score_breakdown'da "NOT_IMPLEMENTED" ile görünür).
-// profile_weight/trust_weight/activity_weight de aynı şekilde HENÜZ
-// hesaplanmıyor çünkü bunları besleyecek bir kullanıcı ilgi alanı/itibar
-// veri modeli bu şema turunda tanımlanmadı (profiles tablosunda böyle bir
-// alan yok, uydurulmadı). Yalnızca help_type_weight (kategori eşleşmesi) ve
-// distance_weight (burada "aynı bölüm" yakınlık vekili olarak kullanıldı,
-// gerçek coğrafi mesafe değil) GERÇEKTEN hesaplanıyor.
+// matching_config.semantic_weight (%60) pgvector embedding gerektirir; embedding sağlayıcı anahtarı
+// (docs/BLOCKERS.md B3) yoktur. Bu yüzden semantic bileşen HESAPLANMAZ ve score_breakdown'da
+// "NOT_IMPLEMENTED" görünür; istemci bu alan sayısal olduğu an "Anlamsal Eşleşme" etiketini gösterir.
+// Gerçekten hesaplanan bileşenler: help_type_weight (kategori eşleşmesi) ve distance_weight ("aynı bölüm" +
+// etiket örtüşmesi yakınlık vekili; gerçek coğrafi mesafe DEĞİL).
 //
-// Bu fonksiyon çalışır ve gerçek veri üretir, ama TAM eşleşme motoru DEĞİLDİR
-// — bkz. memory-bank/Memory_Bank.md ve işlem sonu raporu.
+// PUAN: yalnızca uygulanan bileşenlerin ağırlıklı toplamı 0-100'e NORMALLEŞİRİLİR
+// (önceden en fazla %25 çıkıyordu ve kullanıcıya yanlış düşük eşleşme izlenimi veriyordu).
 
 import { createClient } from "jsr:@supabase/supabase-js@2";
 
@@ -75,8 +69,8 @@ Deno.serve(async (req: Request) => {
 
     const helpTypeWeight = Number(config?.help_type_weight ?? 0.10);
     const distanceWeight = Number(config?.distance_weight ?? 0.15);
-    // semantic/profile/trust/activity ağırlıkları BİLEREK kullanılmıyor —
-    // bkz. dosya başındaki not.
+    const implementedWeight = helpTypeWeight + distanceWeight;
+    // semantic/profile/trust/activity ağırlıkları BİLEREK kullanılmıyor — bkz. dosya başındaki not.
 
     const { data: authorProfile } = await serviceClient
       .from("profiles")
@@ -111,12 +105,14 @@ Deno.serve(async (req: Request) => {
       const sameDepartment = candidateDepartment && candidateDepartment === authorProfile?.department ? 1 : 0.4;
       const distanceProxy = Math.max(tagOverlap, sameDepartment * 0.5);
 
-      const score = Math.round((helpTypeWeight * categoryMatch + distanceWeight * distanceProxy) * 100);
+      const raw = helpTypeWeight * categoryMatch + distanceWeight * distanceProxy;
+      const score = implementedWeight > 0 ? Math.min(100, Math.round((raw / implementedWeight) * 100)) : 0;
 
       results.push({
         matched_user_id: candidate.author_id,
         score,
         score_breakdown: {
+          score_basis: "IMPLEMENTED_COMPONENTS_NORMALIZED",
           category_match: categoryMatch,
           tag_overlap: tagOverlap,
           same_department: candidateDepartment === authorProfile?.department,
@@ -124,7 +120,6 @@ Deno.serve(async (req: Request) => {
           profile_compatibility: "NOT_IMPLEMENTED",
           trust_score: "NOT_IMPLEMENTED",
           activity_score: "NOT_IMPLEMENTED",
-          max_possible_score_given_current_implementation: Math.round((helpTypeWeight + distanceWeight) * 100),
         },
       });
     }

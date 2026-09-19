@@ -1,6 +1,6 @@
 // Supabase Edge Function: parse-need
-// iOS -> parse-need -> Claude API -> strict JSON validation -> ParsedNeed taslağı
-// (bkz. project-goals.md §22, AI_Guidelines.md §4). Bu fonksiyon Firestore/Postgres'e
+// istemci -> parse-need -> Claude API -> strict JSON validation -> ParsedNeed taslağı
+// (bkz. project-goals.md §22, AI_Guidelines.md §4). Bu fonksiyon Postgres'e
 // YAZMAZ — yalnızca doğrulanmış bir taslak döner (publish-need ayrı adımdır).
 
 import { createClient } from "jsr:@supabase/supabase-js@2";
@@ -216,6 +216,20 @@ Deno.serve(async (req: Request) => {
     // rate_limits tablosuna RLS ile hiçbir istemci erişemez (deny-all) —
     // burada service_role ile bilinçli olarak bypass ediliyor.
     const serviceClient = createClient(supabaseUrl, serviceRoleKey);
+
+    // Maliyet kontrolü: yalnızca onaylı öğrenciler AI analizi kullanabilir (onaysız hesap Claude bütçesini tüketemez).
+    const { data: profile } = await serviceClient
+      .from("profiles")
+      .select("account_status, verification_status")
+      .eq("id", user.id)
+      .maybeSingle();
+    if (profile?.account_status !== "ACTIVE" || profile?.verification_status !== "APPROVED") {
+      return new Response(
+        JSON.stringify({ error: "Bu işlem için öğrenci doğrulamanızın onaylanmış olması gerekiyor." }),
+        { status: 403 },
+      );
+    }
+
     const rateLimitResult = await enforceRateLimit(serviceClient, user.id, "parse-need");
     if (!rateLimitResult.ok) {
       return new Response(JSON.stringify({ error: rateLimitResult.message }), { status: 429 });

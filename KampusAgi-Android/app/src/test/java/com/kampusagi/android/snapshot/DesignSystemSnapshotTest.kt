@@ -114,6 +114,7 @@ class DesignSystemSnapshotTest {
                 Chip("Varsayılan")
                 Chip("Seçili", style = ChipStyle.Selected)
                 MatchScoreBadge(score = 90)
+                MatchScoreBadge(score = 90, isSemantic = true)
             }
             Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                 Avatar(name = "İlker Şahin", size = Dimens.avatarLarge)

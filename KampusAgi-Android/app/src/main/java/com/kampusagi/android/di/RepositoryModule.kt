@@ -1,13 +1,19 @@
 package com.kampusagi.android.di
 
 import com.kampusagi.android.data.auth.SupabaseAuthRepository
+import com.kampusagi.android.data.chat.SupabaseChatRepository
 import com.kampusagi.android.data.community.SupabasePostRepository
+import com.kampusagi.android.data.match.SupabaseMatchRepository
 import com.kampusagi.android.data.profile.SupabaseProfileRepository
+import com.kampusagi.android.data.requirement.SupabaseRequirementRepository
 import com.kampusagi.android.data.university.SupabaseUniversityRepository
 import com.kampusagi.android.data.verification.SupabaseStudentVerificationRepository
 import com.kampusagi.android.domain.auth.AuthRepository
+import com.kampusagi.android.domain.chat.ChatRepository
 import com.kampusagi.android.domain.community.PostRepository
+import com.kampusagi.android.domain.match.MatchRepository
 import com.kampusagi.android.domain.profile.ProfileRepository
+import com.kampusagi.android.domain.requirement.RequirementRepository
 import com.kampusagi.android.domain.university.UniversityRepository
 import com.kampusagi.android.domain.verification.StudentVerificationRepository
 import dagger.Binds
@@ -39,4 +45,16 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindPostRepository(impl: SupabasePostRepository): PostRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindRequirementRepository(impl: SupabaseRequirementRepository): RequirementRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindMatchRepository(impl: SupabaseMatchRepository): MatchRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindChatRepository(impl: SupabaseChatRepository): ChatRepository
 }

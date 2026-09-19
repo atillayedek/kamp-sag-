@@ -52,12 +52,18 @@ fun Chip(
     )
 }
 
-/** Eşleşme kartlarındaki "%N Anlamsal Eşleşme" rozeti (`approved` %16 zemin). */
+/**
+ * Eşleşme kartı rozeti (`approved` %16 zemin): "%N Anlamsal Eşleşme" YALNIZCA skor gerçekten embedding benzerliği
+ * içeriyorsa; aksi halde "%N Eşleşme" (yanlış iddia yok, bkz. docs/BLOCKERS.md B3).
+ */
 @Composable
-fun MatchScoreBadge(score: Int, modifier: Modifier = Modifier) {
+fun MatchScoreBadge(score: Int, modifier: Modifier = Modifier, isSemantic: Boolean = false) {
     val colors = MaterialTheme.appColors
     Text(
-        text = stringResource(R.string.match_score_format, score.coerceIn(0, 100)),
+        text = stringResource(
+            if (isSemantic) R.string.match_score_semantic_format else R.string.match_score_format,
+            score.coerceIn(0, 100),
+        ),
         style = MaterialTheme.appText.chip.copy(color = colors.approved),
         modifier = modifier
             .clip(CircleShape)
@@ -76,7 +82,7 @@ private fun ChipsPreview() {
                 Chip("Ders notu")
                 Chip("Bu hafta", style = ChipStyle.Selected)
             }
-            MatchScoreBadge(score = 90)
+            MatchScoreBadge(score = 90, isSemantic = true)
         }
     }
 }

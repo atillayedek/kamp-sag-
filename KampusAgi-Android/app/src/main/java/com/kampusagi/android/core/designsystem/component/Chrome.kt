@@ -3,6 +3,7 @@ package com.kampusagi.android.core.designsystem.component
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -41,6 +42,7 @@ fun AppTopBar(
     title: String,
     modifier: Modifier = Modifier,
     onBack: (() -> Unit)? = null,
+    subtitle: (@Composable () -> Unit)? = null,
     actions: @Composable () -> Unit = {},
 ) {
     Box(
@@ -59,16 +61,19 @@ fun AppTopBar(
                 )
             }
         }
-        Text(
-            text = title,
-            style = MaterialTheme.appText.navTitle,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            modifier = Modifier
-                .align(Alignment.Center)
-                .padding(horizontal = 64.dp)
-                .semantics { heading() },
-        )
+        Column(
+            modifier = Modifier.align(Alignment.Center).padding(horizontal = 64.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Text(
+                text = title,
+                style = MaterialTheme.appText.navTitle,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.semantics { heading() },
+            )
+            subtitle?.invoke()
+        }
         Row(modifier = Modifier.align(Alignment.CenterEnd)) { actions() }
     }
 }
@@ -98,7 +103,7 @@ fun AppFab(
 @Composable
 private fun ChromePreview() {
     PreviewSurface {
-        androidx.compose.foundation.layout.Column {
+        Column {
             AppTopBar(title = "Topluluklar", onBack = {})
             AppFab(onClick = {}, contentDescription = "Gönderi oluştur", modifier = Modifier.padding(20.dp))
         }

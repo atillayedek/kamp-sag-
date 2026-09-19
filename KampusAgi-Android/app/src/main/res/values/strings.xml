@@ -123,7 +123,8 @@
     <string name="chat_typing_cd">Karşı taraf yazıyor</string>
     <string name="chat_send_cd">Gönder</string>
     <string name="chat_input_placeholder">Mesaj yaz…</string>
-    <string name="match_score_format">%%%1$d Anlamsal Eşleşme</string>
+    <string name="match_score_format">%%%1$d Eşleşme</string>
+    <string name="match_score_semantic_format">%%%1$d Anlamsal Eşleşme</string>
 
     <!-- Ana uygulama: sekmeler -->
     <string name="tab_communities">Topluluklar</string>
@@ -165,6 +166,48 @@
     <string name="create_post_category_label">KATEGORİ</string>
     <string name="create_post_submit">Paylaş</string>
 
-    <!-- İhtiyaç Oluştur (ekran başlığı) -->
+    <!-- İhtiyaç Oluştur -->
     <string name="requirement_title">İhtiyaç Oluştur</string>
+    <string name="requirement_input_label">İHTİYACINI ANLAT</string>
+    <string name="requirement_ai_title">AI ANALİZİ</string>
+    <string name="requirement_ai_description">Kategori ve zaman bilgisi, backend üzerinden çalışan yapay zekâ analiziyle otomatik çıkarılır — API anahtarı hiçbir zaman uygulamada tutulmaz.</string>
+    <string name="requirement_ai_idle">Ne aradığını yazmaya başla; analiz yazmayı bıraktığında otomatik yapılır.</string>
+    <string name="requirement_ai_basic_notice">Yapay zekâ şu an kullanılamıyor; temel analiz gösteriliyor.</string>
+    <string name="requirement_publish">Paylaş</string>
+    <string name="requirement_published">İhtiyacın paylaşıldı.</string>
+    <string name="need_type_need">İhtiyacım Var</string>
+    <string name="need_type_offer">Yardım Sunuyorum</string>
+    <string name="need_urgency_high">Acil</string>
+    <string name="need_urgency_urgent">Çok Acil</string>
+    <string name="need_participants_format">%1$d kişi</string>
+
+    <!-- Eşleşmeler -->
+    <string name="matches_title">Eşleşmeler</string>
+    <string name="matches_view_profile">Profili Gör</string>
+    <string name="matches_send_message">Mesaj At</string>
+    <string name="matches_refresh">Yenile</string>
+    <string name="matches_no_requirement_title">Henüz bir ihtiyacın yok</string>
+    <string name="matches_no_requirement_message">Bir ihtiyaç paylaştığında sana uygun kişiler burada görünür.</string>
+    <string name="matches_empty_title">Şimdilik eşleşme yok</string>
+    <string name="matches_empty_message">Yeni bir eşleşme bulunduğunda burada göreceksin. Listeyi yenileyerek tekrar bakabilirsin.</string>
+    <string name="user_profile_title">Profil</string>
+    <string name="user_profile_latest_requirement">SON İHTİYACI</string>
+
+    <!-- Sohbet -->
+    <string name="conversations_title">Sohbet</string>
+    <string name="conversations_empty_title">Henüz sohbetin yok</string>
+    <string name="conversations_empty_message">Eşleşmelerinden birine mesaj atarak sohbet başlatabilirsin.</string>
+    <string name="conversations_no_messages">Sohbeti başlat</string>
+    <string name="conversations_mine_prefix">Sen: %1$s</string>
+    <string name="conversations_unread_cd">%1$d okunmamış mesaj</string>
+    <string name="tab_chat_unread_cd">%1$s, %2$d okunmamış mesaj</string>
+    <string name="chat_online">Çevrimiçi</string>
+    <string name="chat_status_sending">Gönderiliyor…</string>
+    <string name="chat_status_sent">Gönderildi ✓</string>
+    <string name="chat_status_read">İletildi ✓✓</string>
+    <string name="chat_status_failed">Gönderilemedi · Tekrar denemek için dokun</string>
+    <string name="chat_load_older">Eski mesajları yükle</string>
+    <string name="chat_empty_title">Sohbete başla</string>
+    <string name="chat_empty_message">İlk mesajı sen gönder.</string>
+    <string name="chat_load_error">Sohbet yüklenemedi.</string>
 </resources>

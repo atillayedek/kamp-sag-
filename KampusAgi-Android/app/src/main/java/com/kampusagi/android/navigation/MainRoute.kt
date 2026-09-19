@@ -14,4 +14,9 @@ sealed interface MainRoute {
     @Serializable data class CreatePost(val scope: String) : MainRoute
 
     @Serializable data class PostDetail(val postId: String) : MainRoute
+
+    /** Eşleşme adayının herkese açık profili. */
+    @Serializable data class UserProfile(val userId: String) : MainRoute
+
+    @Serializable data class Chat(val conversationId: String) : MainRoute
 }

@@ -14,6 +14,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
@@ -28,12 +30,17 @@ import com.kampusagi.android.core.designsystem.appColors
 import com.kampusagi.android.core.designsystem.component.AppBottomBar
 import com.kampusagi.android.core.designsystem.component.AppTopBar
 import com.kampusagi.android.core.designsystem.component.BottomBarItem
-import com.kampusagi.android.core.designsystem.component.EmptyStateView
 import com.kampusagi.android.core.designsystem.component.TextDangerButton
 import com.kampusagi.android.domain.community.CommunityScope
+import com.kampusagi.android.feature.chat.ChatScreen
+import com.kampusagi.android.feature.chat.ConversationsScreen
+import com.kampusagi.android.feature.chat.ConversationsViewModel
 import com.kampusagi.android.feature.communities.CommunitiesScreen
 import com.kampusagi.android.feature.communities.CreatePostScreen
 import com.kampusagi.android.feature.communities.PostDetailScreen
+import com.kampusagi.android.feature.matches.MatchesScreen
+import com.kampusagi.android.feature.matches.UserProfileScreen
+import com.kampusagi.android.feature.requirement.CreateRequirementScreen
 import com.kampusagi.android.navigation.MainRoute
 
 private enum class MainTab(val route: MainRoute, val labelRes: Int, val icon: ImageVector) {
@@ -49,8 +56,9 @@ private enum class MainTab(val route: MainRoute, val labelRes: Int, val icon: Im
  * Alt çubuk yalnızca sekme ekranlarında görünür; ayrıntı ekranları (gönderi oluştur, yorumlar…) tam ekrandır.
  */
 @Composable
-fun MainScreen(onSignOut: () -> Unit) {
+fun MainScreen(onSignOut: () -> Unit, inboxViewModel: ConversationsViewModel = hiltViewModel()) {
     val navController = rememberNavController()
+    val inbox by inboxViewModel.uiState.collectAsStateWithLifecycle()
     val backStackEntry by navController.currentBackStackEntryAsState()
     val destination = backStackEntry?.destination
     val currentTab = MainTab.entries.firstOrNull { destination?.hasRoute(it.route::class) == true }
@@ -62,7 +70,16 @@ fun MainScreen(onSignOut: () -> Unit) {
         bottomBar = {
             if (currentTab != null) {
                 AppBottomBar(
-                    items = MainTab.entries.map { BottomBarItem(stringResource(it.labelRes), it.icon) },
+                    items = MainTab.entries.map { tab ->
+                        val label = stringResource(tab.labelRes)
+                        val unread = if (tab == MainTab.Conversations) inbox.unreadTotal else 0
+                        BottomBarItem(
+                            label = label,
+                            icon = tab.icon,
+                            badgeCount = unread,
+                            badgeDescription = if (unread > 0) stringResource(R.string.tab_chat_unread_cd, label, unread) else null,
+                        )
+                    },
                     selectedIndex = currentTab.ordinal,
                     onSelect = { index ->
                         val target = MainTab.entries[index].route
@@ -93,20 +110,29 @@ fun MainScreen(onSignOut: () -> Unit) {
             composable<MainRoute.PostDetail> {
                 PostDetailScreen(onBack = { navController.popBackStack() })
             }
-            composable<MainRoute.Matches> { TabInProgress(R.string.tab_matches) }
-            composable<MainRoute.CreateRequirement> { TabInProgress(R.string.requirement_title) }
-            composable<MainRoute.Conversations> { TabInProgress(R.string.tab_chat) }
+            composable<MainRoute.Matches> {
+                MatchesScreen(
+                    onOpenChat = { conversationId -> navController.navigate(MainRoute.Chat(conversationId)) },
+                    onOpenProfile = { userId -> navController.navigate(MainRoute.UserProfile(userId)) },
+                    onCreateRequirement = { navController.navigate(MainRoute.CreateRequirement) },
+                )
+            }
+            composable<MainRoute.UserProfile> {
+                UserProfileScreen(
+                    onBack = { navController.popBackStack() },
+                    onOpenChat = { conversationId -> navController.navigate(MainRoute.Chat(conversationId)) },
+                )
+            }
+            composable<MainRoute.CreateRequirement> { CreateRequirementScreen() }
+            composable<MainRoute.Conversations> {
+                ConversationsScreen(
+                    viewModel = inboxViewModel,
+                    onOpenConversation = { conversationId -> navController.navigate(MainRoute.Chat(conversationId)) },
+                )
+            }
+            composable<MainRoute.Chat> { ChatScreen(onBack = { navController.popBackStack() }) }
             composable<MainRoute.Profile> { ProfileTemporary(onSignOut) }
         }
-    }
-}
-
-/** GEÇİCİ (Görev 9-11 ile gerçek ekranlarla değiştirilecek). */
-@Composable
-private fun TabInProgress(titleRes: Int) {
-    Column(modifier = Modifier.fillMaxSize()) {
-        AppTopBar(title = stringResource(titleRes))
-        EmptyStateView(title = stringResource(titleRes), message = stringResource(R.string.common_loading))
     }
 }
 

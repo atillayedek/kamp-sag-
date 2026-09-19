@@ -46,3 +46,11 @@ fun formatRelativeTime(context: Context, then: Instant, now: Instant = Instant.n
         is RelativeTime.Absolute ->
             DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM).withLocale(TurkishLocale).format(relative.instant.atZone(zone))
     }
+
+/** "26 Eyl 2026 18:00" — yerel saat dilimi ve Türkçe kısa biçim. */
+fun formatDateTime(context: Context, instant: Instant, zone: ZoneId = ZoneId.systemDefault()): String =
+    DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM, FormatStyle.SHORT).withLocale(TurkishLocale).format(instant.atZone(zone))
+
+/** Sohbet balonu saati: "14:03" (yerel saat dilimi). */
+fun formatClockTime(instant: Instant, zone: ZoneId = ZoneId.systemDefault()): String =
+    DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT).withLocale(TurkishLocale).format(instant.atZone(zone))

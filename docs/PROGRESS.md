@@ -5,11 +5,11 @@
 
 ## Şu an üzerinde çalışılan görev
 
-**Görev 8: İhtiyaç Oluştur (`parse-need` analizi + `publish-need`) — sonra 9 (Eşleşmeler), 10 (Sohbet), 11 (Profil/Ayarlar), 12 (Premium), 13 (Etkinlikler).** Geçici sekme yer tutucuları (`MainScreen.kt` içinde `TabInProgress`, `ProfileTemporary`) görevler bittikçe kaldırılacak.
+**Görev 11: Profil / Ayarlar + tema tercihi — sonra 12 (Premium), 13 (Etkinlikler).** Geçici `ProfileTemporary` (`MainScreen.kt`) Görev 11 ile kaldırılacak.
 
 ## Son başarılı build/test
 
-- 2026-09-19 — `:app:testDebugUnitTest` ✓ (97 test), `:app:recordRoborazziDebug` ✓ (24 ekran görüntüsü, light+dark yan yana, gözle doğrulandı), `:app:compileDebugKotlin` ✓; canlı DB testleri (`supabase/tests/001,002`) ✓.
+- 2026-09-19 — `:app:testDebugUnitTest` ✓ (181 test), `:app:verifyRoborazziDebug` ✓ (35 ekran görüntüsü, light+dark yan yana, gözle doğrulandı), `:app:compileDebugKotlin` ✓; canlı DB testleri (`supabase/tests/001,002,003`) ✓.
 
 ## Komutlar (Windows)
 
@@ -45,12 +45,12 @@ Ayrıca makinede eski bir Firebase tabanlı KampüsAğı projesi (`Desktop\dosya
 ### Ekranlar (Android)
 | Ekran | Durum |
 |---|---|
-| Welcome | Var, gerçek (mockup token'larına göre yazılmış; yeni token'lara taşınacak) |
-| Login (e-posta/şifre, Google, şifre sıfırlama) | Var, Supabase Auth'a bağlı. Google Web Client ID **placeholder** (BLOCKERS B2). Apple ile devam et: Android'de anlamsız → yok (D5) |
-| Register (6 adım) | Adım 1 (hesap) ve 6 (belge) gerçek; **adım 2–5 içeriği hiçbir kaynakta verilmedi** → "netleşmedi" placeholder + `"İleri (geçici)"` hardcoded metin (**mock**) |
-| PendingReview / Rejected | Var, gerçek (Supabase'e bağlı); canlı izleme yok (yalnızca manuel yenile) |
-| Approved | **Placeholder ekran** (ana uygulama yok) |
-| Topluluklar, İhtiyaç Oluştur, Eşleşmeler, Sohbet, Profil/Ayarlar, Premium, Etkinlikler, ana navigasyon | **Yok** |
+| Welcome, Login, Register (6 adım), PendingReview, Rejected | Gerçek, Supabase'e bağlı, yeni tasarım sisteminde. Google Web Client ID `local.properties`'ten (BLOCKERS B2). Apple girişi Android'de yok (D5) |
+| Topluluklar (+ gönderi oluştur, gönderi detayı/yorumlar) | Gerçek (Görev 7) |
+| İhtiyaç Oluştur (AI analiz kartı) | Gerçek (Görev 8): `parse-need` + `publish-need`; yayından sonra `recompute-matches` tetiklenir |
+| Eşleşmeler (kart yığını, kaydırarak geç, Profili Gör, Mesaj At) + kullanıcı profili | Gerçek (Görev 9) |
+| Sohbet listesi + sohbet (gönderiliyor/gönderilemedi/iletildi, yazıyor, çevrimiçi, eski mesajlar, yeniden bağlanma) + okunmamış rozeti | Gerçek (Görev 10); Realtime parçaları canlıda elle doğrulanmalı (RELEASE_NOTES) |
+| Profil/Ayarlar, Premium, Etkinlikler | **Yok / geçici** (Görev 11–13) |
 
 ### Backend (Supabase) durumu
 - Var: profiles, universities, student_verifications, communities, posts/comments/post_likes/saved_posts, requirements, matches, chat, notifications, campus_events, rate_limits, leaderboard/badges, reports; `student-documents` bucket; RLS her tabloda; `post_feed_view` (sayaçlar `count(*)` ile türetilir → trigger sayaç yok, D8).
@@ -72,9 +72,9 @@ Android SDK (`%LOCALAPPDATA%\Android\Sdk`: platform 36.1/37.0, build-tools 36.0.
 - [x] 5. Sunucu: `review_student_verification` RPC (atomik onay), `set-user-role` (claim), `delete-account`, tetikleyicili sayaçlar, university_id kilidi — gerçek DB testleriyle doğrulandı (`supabase/tests/`)
 - [x] 6. Navigasyon + accountStatus yönlendirmesi (kök durum makinesi + 5 sekmeli `MainScreen`; sekmeler görevler ilerledikçe gerçek ekranla dolar)
 - [x] 7. Topluluklar (Genel/Üniversitem akışı, sayfalama, pull-to-refresh, iyimser beğeni, gönderi oluşturma, yorumlar)
-- [ ] 8. İhtiyaç Oluştur + analiz Function'ı (`parse-need`)
-- [ ] 9. Eşleşmeler + skor Function'ı
-- [ ] 10. Sohbet + presence (+ bildirim: FCM yerine Realtime, bkz. BLOCKERS B1)
+- [x] 8. İhtiyaç Oluştur + analiz Function'ı (`parse-need`) — MockEngine ile HTTP sözleşmesi testli
+- [x] 9. Eşleşmeler + skor Function'ı (`recompute-matches` normalize skor; "Anlamsal" yalnızca gerçek embedding skorunda)
+- [x] 10. Sohbet + presence (RPC ile sohbet başlatma, özel Realtime kanalı, okundu/yazıyor/çevrimiçi; bildirim: FCM yerine Realtime, BLOCKERS B1)
 - [ ] 11. Profil / Ayarlar + tema tercihi
 - [ ] 12. Premium + sunucu tarafı satın alma doğrulaması
 - [ ] 13. Etkinlikler ekranını tasarıma uyarla

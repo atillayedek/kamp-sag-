@@ -8,6 +8,8 @@ import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Groups
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -18,6 +20,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.kampusagi.android.core.designsystem.LightDarkPreviews
@@ -25,7 +29,13 @@ import com.kampusagi.android.core.designsystem.PreviewSurface
 import com.kampusagi.android.core.designsystem.appColors
 import com.kampusagi.android.core.designsystem.appText
 
-class BottomBarItem(val label: String, val icon: ImageVector)
+/** `badgeCount` > 0 ise ikonun üstünde sayaç rozeti çıkar; `badgeDescription` erişilebilirlik metnidir. */
+class BottomBarItem(
+    val label: String,
+    val icon: ImageVector,
+    val badgeCount: Int = 0,
+    val badgeDescription: String? = null,
+)
 
 /** Alt gezinme çubuğu: seçili öğe `primary`, diğerleri `label2`; üstte `cardBorder` ayırıcı. */
 @Composable
@@ -43,7 +53,21 @@ fun AppBottomBar(
                 NavigationBarItem(
                     selected = index == selectedIndex,
                     onClick = { onSelect(index) },
-                    icon = { Icon(item.icon, contentDescription = null) },
+                    icon = {
+                        if (item.badgeCount > 0) {
+                            BadgedBox(
+                                badge = {
+                                    Badge(
+                                        containerColor = colors.rejected,
+                                        contentColor = colors.primaryContrast,
+                                        modifier = Modifier.semantics { item.badgeDescription?.let { contentDescription = it } },
+                                    ) { Text(text = if (item.badgeCount > 99) "99+" else item.badgeCount.toString()) }
+                                },
+                            ) { Icon(item.icon, contentDescription = null) }
+                        } else {
+                            Icon(item.icon, contentDescription = null)
+                        }
+                    },
                     label = {
                         Text(
                             text = item.label,
