@@ -40,6 +40,7 @@ import com.kampusagi.android.core.ui.toUiText
 import com.kampusagi.android.feature.auth.login.LoginScreen
 import com.kampusagi.android.feature.auth.register.RegisterScreen
 import com.kampusagi.android.feature.auth.welcome.WelcomeScreen
+import com.kampusagi.android.feature.main.MainScreen
 import com.kampusagi.android.feature.verification.PendingReviewScreen
 import com.kampusagi.android.feature.verification.RejectedScreen
 
@@ -100,7 +101,7 @@ fun KampusAgiNavHost(rootViewModel: RootViewModel = hiltViewModel()) {
                 RejectedScreen(reason = route.reason)
             }
             composable<KampusAgiRoute.Approved> {
-                ApprovedScreen(onSignOut = rootViewModel::signOut)
+                MainScreen(onSignOut = rootViewModel::signOut)
             }
         }
 
@@ -147,29 +148,6 @@ private fun LoadFailedOverlay(message: String, onRetry: () -> Unit, onSignOut: (
                 onClick = onSignOut,
                 modifier = Modifier.padding(horizontal = Dimens.screenPaddingH),
             )
-        }
-    }
-}
-
-/** Onaylı kullanıcı için ana uygulama (sekmeli gezinme) sonraki görevlerde bu ekranın yerine geçer. */
-@Composable
-private fun ApprovedScreen(onSignOut: () -> Unit) {
-    Scaffold(containerColor = MaterialTheme.appColors.appBg) { padding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-                .padding(Dimens.screenPaddingH),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
-        ) {
-            Text(stringResource(R.string.approved_title), style = MaterialTheme.appText.titleLarge)
-            Text(
-                stringResource(R.string.approved_message),
-                style = MaterialTheme.appText.bodyCenter,
-                modifier = Modifier.padding(top = 8.dp),
-            )
-            TextDangerButton(text = stringResource(R.string.logout_button), onClick = onSignOut)
         }
     }
 }

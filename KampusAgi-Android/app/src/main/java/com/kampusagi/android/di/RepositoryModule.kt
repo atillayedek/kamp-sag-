@@ -1,10 +1,12 @@
 package com.kampusagi.android.di
 
 import com.kampusagi.android.data.auth.SupabaseAuthRepository
+import com.kampusagi.android.data.community.SupabasePostRepository
 import com.kampusagi.android.data.profile.SupabaseProfileRepository
 import com.kampusagi.android.data.university.SupabaseUniversityRepository
 import com.kampusagi.android.data.verification.SupabaseStudentVerificationRepository
 import com.kampusagi.android.domain.auth.AuthRepository
+import com.kampusagi.android.domain.community.PostRepository
 import com.kampusagi.android.domain.profile.ProfileRepository
 import com.kampusagi.android.domain.university.UniversityRepository
 import com.kampusagi.android.domain.verification.StudentVerificationRepository
@@ -33,4 +35,8 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindUniversityRepository(impl: SupabaseUniversityRepository): UniversityRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindPostRepository(impl: SupabasePostRepository): PostRepository
 }

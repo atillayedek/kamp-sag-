@@ -125,7 +125,46 @@
     <string name="chat_input_placeholder">Mesaj yaz…</string>
     <string name="match_score_format">%%%1$d Anlamsal Eşleşme</string>
 
-    <!-- Onaylı kullanıcı — ana uygulama (Görev 6+ ile genişler) -->
-    <string name="approved_title">Hoş geldin!</string>
-    <string name="approved_message">Öğrenci doğrulaman onaylandı.</string>
+    <!-- Ana uygulama: sekmeler -->
+    <string name="tab_communities">Topluluklar</string>
+    <string name="tab_matches">Eşleşmeler</string>
+    <string name="tab_requirement">İhtiyaç</string>
+    <string name="tab_chat">Sohbet</string>
+    <string name="tab_profile">Profil</string>
+
+    <!-- Göreli zaman -->
+    <string name="relative_just_now">az önce</string>
+    <string name="relative_minutes_ago">%1$d dakika önce</string>
+    <string name="relative_hours_ago">%1$d saat önce</string>
+    <string name="relative_days_ago">%1$d gün önce</string>
+    <string name="relative_weeks_ago">%1$d hafta önce</string>
+
+    <!-- Topluluklar -->
+    <string name="communities_title">Topluluklar</string>
+    <string name="communities_scope_general">Genel</string>
+    <string name="communities_scope_university">Üniversitem</string>
+    <string name="communities_empty_title">Henüz gönderi yok</string>
+    <string name="communities_empty_message">İlk gönderiyi sen paylaş.</string>
+    <string name="communities_create_post_cd">Gönderi oluştur</string>
+    <string name="category_sports">Spor</string>
+    <string name="category_academic">Akademik</string>
+    <string name="category_social">Sosyal</string>
+    <string name="category_housing">Barınma</string>
+    <string name="category_transport">Ulaşım</string>
+    <string name="category_other">Diğer</string>
+    <string name="post_like_cd">Beğen, %1$d beğeni</string>
+    <string name="post_unlike_cd">Beğenmekten vazgeç, %1$d beğeni</string>
+    <string name="post_comments_cd">%1$d yorum</string>
+    <string name="post_detail_title">Gönderi</string>
+    <string name="post_comments_heading">YORUMLAR</string>
+    <string name="post_comments_empty">Henüz yorum yok.</string>
+    <string name="post_comment_placeholder">Yorum yaz…</string>
+    <string name="create_post_title">Gönderi Oluştur</string>
+    <string name="create_post_title_label">BAŞLIK</string>
+    <string name="create_post_body_label">GÖNDERİ</string>
+    <string name="create_post_category_label">KATEGORİ</string>
+    <string name="create_post_submit">Paylaş</string>
+
+    <!-- İhtiyaç Oluştur (ekran başlığı) -->
+    <string name="requirement_title">İhtiyaç Oluştur</string>
 </resources>

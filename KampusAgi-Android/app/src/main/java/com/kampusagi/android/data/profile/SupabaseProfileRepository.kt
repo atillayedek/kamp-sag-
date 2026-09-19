@@ -9,6 +9,7 @@ import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.postgrest.exception.PostgrestRestException
 import io.github.jan.supabase.postgrest.from
+import io.github.jan.supabase.postgrest.query.Columns
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import javax.inject.Inject
@@ -25,11 +26,20 @@ class SupabaseProfileRepository @Inject constructor(
         @SerialName("avatar_url") val avatarUrl: String? = null,
         @SerialName("university_id") val universityId: String? = null,
         val department: String? = null,
+        val universities: UniversityRef? = null,
+    )
+
+    @Serializable
+    private data class UniversityRef(
+        val name: String,
+        @SerialName("short_name") val shortName: String,
     )
 
     override suspend fun getMyProfile(): Profile = mapErrors {
         val row = client.from("profiles")
-            .select { filter { eq("id", requireUserId()) } }
+            .select(Columns.raw("id, username, full_name, avatar_url, university_id, department, universities(name, short_name)")) {
+                filter { eq("id", requireUserId()) }
+            }
             .decodeSingle<ProfileRow>()
         Profile(
             id = row.id,
@@ -38,6 +48,8 @@ class SupabaseProfileRepository @Inject constructor(
             avatarUrl = row.avatarUrl,
             universityId = row.universityId,
             department = row.department,
+            universityName = row.universities?.name,
+            universityShortName = row.universities?.shortName,
         )
     }
 

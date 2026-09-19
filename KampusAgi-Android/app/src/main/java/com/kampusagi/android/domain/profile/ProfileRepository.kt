@@ -11,6 +11,8 @@ data class Profile(
     val avatarUrl: String?,
     val universityId: String?,
     val department: String?,
+    val universityName: String? = null,
+    val universityShortName: String? = null,
 ) {
     /** Kayıt sihirbazının profil adımları (2-5) tamamlandı mı? */
     val isComplete: Boolean

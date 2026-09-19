@@ -5,11 +5,11 @@
 
 ## Şu an üzerinde çalışılan görev
 
-**Görev 5–6: sunucu tarafı (review-verification, hesap silme, university_id kilidi) + onaylı kullanıcı için sekmeli ana navigasyon.**
+**Görev 8: İhtiyaç Oluştur (`parse-need` analizi + `publish-need`) — sonra 9 (Eşleşmeler), 10 (Sohbet), 11 (Profil/Ayarlar), 12 (Premium), 13 (Etkinlikler).** Geçici sekme yer tutucuları (`MainScreen.kt` içinde `TabInProgress`, `ProfileTemporary`) görevler bittikçe kaldırılacak.
 
 ## Son başarılı build/test
 
-- 2026-09-19 — `:app:assembleDebug` ✓ (uyarısız), `:app:testDebugUnitTest` ✓ (57 test), `:app:verifyRoborazziDebug` ✓ (16 ekran görüntüsü, light+dark yan yana).
+- 2026-09-19 — `:app:testDebugUnitTest` ✓ (97 test), `:app:recordRoborazziDebug` ✓ (24 ekran görüntüsü, light+dark yan yana, gözle doğrulandı), `:app:compileDebugKotlin` ✓; canlı DB testleri (`supabase/tests/001,002`) ✓.
 
 ## Komutlar (Windows)
 
@@ -69,9 +69,9 @@ Android SDK (`%LOCALAPPDATA%\Android\Sdk`: platform 36.1/37.0, build-tools 36.0.
 - [x] 2. Design tokens (renk, tipografi, boşluk) + light/dark  → `core/designsystem/{AppColors,AppTypography,Dimens,Theme}.kt`
 - [x] 3. DesignSystem bileşen kütüphanesi + Preview'lar  → `core/designsystem/component/*` (17 bileşen; Apple butonu Android'de yok, D5)
 - [x] 4. Auth/doğrulama ekranları tokens'a taşındı, mock'lar temizlendi, gerçek Supabase'e bağlandı (Welcome, Login, 6 adımlı Register, Pending, Rejected)
-- [ ] 5. Sunucu: claim ataması, atomik belge onayı, (sayaçlar: türetilmiş), hesap silme  *(Edge Function + SQL)*
-- [ ] 6. Navigasyon + accountStatus yönlendirmesi  *(durum→ekran yönlendirmesi + canlı izleme HAZIR; onaylı kullanıcı için sekmeli ana uygulama kaldı)*
-- [ ] 7. Topluluklar
+- [x] 5. Sunucu: `review_student_verification` RPC (atomik onay), `set-user-role` (claim), `delete-account`, tetikleyicili sayaçlar, university_id kilidi — gerçek DB testleriyle doğrulandı (`supabase/tests/`)
+- [x] 6. Navigasyon + accountStatus yönlendirmesi (kök durum makinesi + 5 sekmeli `MainScreen`; sekmeler görevler ilerledikçe gerçek ekranla dolar)
+- [x] 7. Topluluklar (Genel/Üniversitem akışı, sayfalama, pull-to-refresh, iyimser beğeni, gönderi oluşturma, yorumlar)
 - [ ] 8. İhtiyaç Oluştur + analiz Function'ı (`parse-need`)
 - [ ] 9. Eşleşmeler + skor Function'ı
 - [ ] 10. Sohbet + presence (+ bildirim: FCM yerine Realtime, bkz. BLOCKERS B1)
