@@ -1,0 +1,45 @@
+# Secrets — asla commit edilmez (bkz. AI_Guidelines.md §3.1, §11)
+.env
+.env.*
+*.pem
+*.p12
+**/serviceAccountKey*.json
+supabase/.temp/
+supabase/.branches/
+
+# Node (Supabase Edge Functions yerel test için, varsa)
+node_modules/
+npm-debug.log*
+
+# Supabase CLI yerel durumu
+.supabase/
+
+# Xcode / iOS
+# .xcodeproj bilerek gitignore edilir — project.yml'den `xcodegen generate`
+# ile yeniden üretilir (bkz. KampusAgi-iOS/project.yml).
+KampusAgi-iOS/*.xcodeproj/
+**/xcuserdata/
+**/*.xcuserstate
+**/DerivedData/
+**/.build/
+*.xcworkspace/xcuserdata/
+
+# macOS
+.DS_Store
+
+# Android / Gradle
+**/build/
+.gradle/
+.kotlin/
+.idea/
+*.iml
+local.properties
+captures/
+*.apk
+*.aab
+*.keystore
+*.jks
+google-services.json
+
+# Claude Code yerel ayarları
+.claude/

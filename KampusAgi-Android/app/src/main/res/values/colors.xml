@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Yalnızca launcher icon arka planı için — asıl marka renkleri
+         Color.kt'de tanımlıdır (bkz. AI_Guidelines.md — tek kaynak ilkesi
+         yalnızca Compose renkleri için geçerlidir, bu XML kaynağı Android'in
+         adaptive icon sisteminin zorunlu kıldığı bir istisnadır). -->
+    <color name="ic_launcher_background">#4F46E5</color>
+</resources>

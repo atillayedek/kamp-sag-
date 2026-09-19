@@ -1,0 +1,31 @@
+# Supabase CLI yerel geliştirme yapılandırması.
+# Production proje: "KampusAgi" (ref: ggphcgapgwrcdumfldsc, eu-central-1).
+# Gerçek proje ref'i/URL'i buraya YAZILMAZ — `supabase link` ile yerelde
+# bağlanın; anon key/service_role key ASLA bu dosyaya veya repoya girmez
+# (bkz. AI_Guidelines.md §3.1, §11).
+
+project_id = "kampusagi"
+
+[api]
+enabled = true
+port = 54321
+schemas = ["public", "storage", "extensions"]
+
+[db]
+port = 54322
+major_version = 17
+
+[studio]
+enabled = true
+port = 54323
+
+[auth]
+enabled = true
+site_url = "http://localhost:3000"
+
+[storage]
+enabled = true
+file_size_limit = "10MiB"
+
+[edge_runtime]
+enabled = true

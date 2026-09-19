@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">KampüsAğı</string>
+
+    <!-- Welcome -->
+    <string name="welcome_title">KampüsAğı</string>
+    <string name="welcome_subtitle">Kampüsündeki öğrencilerle ihtiyaçlarını eşleştir.</string>
+    <string name="welcome_login_button">Giriş Yap</string>
+    <string name="welcome_register_button">Kayıt Ol</string>
+
+    <!-- Login -->
+    <string name="login_title">Giriş Yap</string>
+    <string name="login_email_label">E-posta</string>
+    <string name="login_email_placeholder">ada.yilmaz@ogr.metu.edu.tr</string>
+    <string name="login_password_label">Şifre</string>
+    <string name="login_password_show_cd">Şifreyi göster</string>
+    <string name="login_password_hide_cd">Şifreyi gizle</string>
+    <string name="login_forgot_password">Şifremi unuttum</string>
+    <string name="login_submit_button">Giriş Yap</string>
+    <string name="login_divider_or">veya</string>
+    <string name="login_google_button">Google ile devam et</string>
+    <string name="login_error_generic">Giriş başarısız. E-posta veya şifrenizi kontrol edin.</string>
+    <string name="login_password_reset_missing_email">Şifre sıfırlama için önce e-posta adresinizi girin.</string>
+    <string name="login_password_reset_failed">Şifre sıfırlama bağlantısı gönderilemedi.</string>
+    <string name="login_google_error">Google ile giriş başarısız.</string>
+
+    <!-- Register — genel -->
+    <string name="register_title">Kayıt Ol</string>
+    <string name="register_step_format">%1$d/%2$d — %3$s</string>
+    <string name="register_step_account_title">Hesap Bilgileri</string>
+    <string name="register_step_unclear_title">İçerik Netleşmedi</string>
+    <string name="register_step_unclear_message">Bu adımın içeriği henüz netleşmedi.</string>
+    <string name="register_account_heading">E-posta ve şifrenizi belirleyin</string>
+    <string name="register_password_hint">En az 6 karakter</string>
+    <string name="register_continue_button">Devam Et</string>
+    <string name="register_back_button">Geri</string>
+    <string name="register_account_error">Hesap oluşturulamadı. Bilgilerinizi kontrol edip tekrar deneyin.</string>
+
+    <!-- Register — belge adımı -->
+    <string name="register_document_step_title">Öğrenci Belgesi</string>
+    <string name="register_document_upload_title">Öğrenci belgenizi yükleyin</string>
+    <string name="register_document_help_title">Neden bu belge isteniyor?</string>
+    <string name="register_document_help_body">Öğrenci belgen, gerçek üniversite öğrencilerinin bir araya geldiği bir topluluk oluşturmamız için gerekli. Belge yalnızca moderatör ekibi tarafından incelenir.</string>
+    <string name="register_document_pick_button">PDF Öğrenci Belgesi Seç</string>
+    <string name="register_document_hint">Yalnızca resmi PDF öğrenci belgesi kabul edilir. Ekran görüntüsü veya fotoğraf yüklemeyin.</string>
+    <string name="register_document_remove_cd">Seçilen dosyayı kaldır</string>
+    <string name="register_document_submit_button">Başvuruyu Gönder</string>
+    <string name="register_document_submit_error">Belge yüklenemedi. Lütfen tekrar deneyin.</string>
+
+    <!-- Pending -->
+    <string name="pending_title">Başvurunuz İnceleniyor</string>
+    <string name="pending_message">Öğrenci belgeniz admin ekibimiz tarafından kontrol ediliyor.\n\nBu işlem tamamlandığında bildirim alacaksınız.</string>
+    <string name="pending_refresh_button">Başvuru Durumunu Yenile</string>
+
+    <!-- Rejected -->
+    <string name="rejected_title">Belgeniz Doğrulanamadı</string>
+    <string name="rejected_reason_label">SEBEP</string>
+    <string name="rejected_default_reason">Belge okunamıyor, geçersiz veya güncel değil.</string>
+    <string name="rejected_retry_hint">Lütfen yeni bir PDF yükleyin.</string>
+
+    <!-- Onaylandı (yalnızca yer tutucu — ana uygulama bu turda istenmedi) -->
+    <string name="approved_title">Hoş geldin!</string>
+    <string name="approved_message">Öğrenci doğrulaman onaylandı. Ana uygulama ekranları (Topluluk, İhtiyaç, Sıralama, Mesajlar, Profil) bu tasarım turunda istenmedi.</string>
+
+    <!-- Ortak -->
+    <string name="logout_button">Çıkış Yap</string>
+    <string name="nav_back_cd">Geri</string>
+</resources>

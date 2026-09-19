@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <!-- POST_NOTIFICATIONS bilerek YOK: FCM kullanıcı tarafından iptal edildi
+         (2026-09-16) — bkz. memory-bank/Memory_Bank.md §11, AI_Guidelines.md §45.7
+         (çelişki ÇÖZÜLDÜ: Firebase yasağı korunuyor, push bildirim altyapısı
+         bu turda hiç kurulmuyor). -->
+
+    <application
+        android:name=".KampusAgiApplication"
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@android:style/Theme.Material.Light.NoActionBar">
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:theme="@android:style/Theme.Material.Light.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+
+</manifest>

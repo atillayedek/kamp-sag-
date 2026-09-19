@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Basit yer tutucu (merkezi beyaz daire) — sadece AndroidManifest'in
+     @mipmap/ic_launcher referansının eksik kaynak hatası vermemesi içindir.
+     Gerçek marka logosu Android Studio > File > New > Image Asset ile
+     eklenmelidir (bkz. memory-bank/Memory_Bank.md). -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M54,24 A30,30 0 1 1 53.9,24 Z" />
+</vector>
