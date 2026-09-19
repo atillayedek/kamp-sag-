@@ -1,22 +1,38 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
+    alias(libs.plugins.roborazzi)
 }
+
+val localProps = Properties().apply {
+    val file = rootProject.file("local.properties")
+    if (file.exists()) file.inputStream().use { load(it) }
+}
+
+fun buildConfigString(value: String) = "\"" + value.replace("\\", "\\\\").replace("\"", "\\\"") + "\""
 
 android {
     namespace = "com.kampusagi.android"
-    compileSdk = 35
+    compileSdk { version = release(37) }
 
     defaultConfig {
         applicationId = "com.kampusagi.android"
         minSdk = 26
-        targetSdk = 35
+        targetSdk = 36
         versionCode = 1
         versionName = "0.1.0"
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        // Gizli DEĞİL (publishable/anon anahtar RLS ile korunur); yine de koda gömülmez.
+        buildConfigField("String", "SUPABASE_URL", buildConfigString(providers.gradleProperty("supabase.url").get()))
+        buildConfigField("String", "SUPABASE_PUBLISHABLE_KEY", buildConfigString(providers.gradleProperty("supabase.publishableKey").get()))
+        // Google Cloud Console'daki Web OAuth Client ID (gizli değil); yoksa boş -> giriş düğmesi "yapılandırılmadı" der.
+        buildConfigField("String", "GOOGLE_WEB_CLIENT_ID", buildConfigString(localProps.getProperty("google.webClientId", "")))
     }
 
     buildTypes {
@@ -31,12 +47,16 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
-    kotlinOptions {
-        jvmTarget = "17"
-    }
-
     buildFeatures {
         compose = true
+        buildConfig = true
+    }
+
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
+            isReturnDefaultValues = true
+        }
     }
 
     packaging {
@@ -49,6 +69,7 @@ android {
 dependencies {
     implementation(libs.core.ktx)
     implementation(libs.lifecycle.runtime.ktx)
+    implementation(libs.lifecycle.runtime.compose)
     implementation(libs.lifecycle.viewmodel.compose)
     implementation(libs.activity.compose)
 
@@ -80,5 +101,22 @@ dependencies {
     implementation(libs.credentials)
     implementation(libs.credentials.play.services.auth)
     implementation(libs.googleid)
-    implementation(libs.play.services.auth)
+
+    implementation(libs.datastore.preferences)
+
+    implementation(libs.coil.compose)
+    implementation(libs.coil.network.ktor3)
+
+    testImplementation(libs.junit)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.mockk)
+    testImplementation(libs.turbine)
+    testImplementation(libs.robolectric)
+    testImplementation(libs.roborazzi)
+    testImplementation(libs.roborazzi.compose)
+    testImplementation(libs.roborazzi.junit.rule)
+    testImplementation(libs.androidx.test.ext.junit)
+    testImplementation(platform(libs.compose.bom))
+    testImplementation(libs.compose.ui.test.junit4)
+    debugImplementation(libs.compose.ui.test.manifest)
 }

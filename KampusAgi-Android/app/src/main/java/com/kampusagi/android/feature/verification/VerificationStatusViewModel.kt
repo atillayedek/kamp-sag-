@@ -1,15 +1,18 @@
 package com.kampusagi.android.feature.verification
 
-import android.content.Context
 import android.net.Uri
-import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kampusagi.android.R
+import com.kampusagi.android.core.file.PickedDocumentReader
+import com.kampusagi.android.core.session.SessionRefresher
+import com.kampusagi.android.core.ui.UiText
+import com.kampusagi.android.core.ui.toUiText
+import com.kampusagi.android.core.ui.uiText
 import com.kampusagi.android.domain.auth.AuthRepository
+import com.kampusagi.android.domain.common.AppError
 import com.kampusagi.android.domain.verification.StudentVerificationRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -17,62 +20,72 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-data class VerificationStatusUiState(
+data class VerificationUiState(
     val isRefreshing: Boolean = false,
     val isResubmitting: Boolean = false,
-    val rejectionReason: String? = null,
-    @StringRes val errorMessageRes: Int? = null,
+    val message: UiText? = null,
 )
 
-/** PendingReviewScreen ve RejectedScreen tarafından paylaşılan ViewModel. */
+/**
+ * Bekleyen/Reddedilen ekranlarının ortak eylemleri. Durumun kendisi RootViewModel'de canlı
+ * izlenir; burada yalnızca kullanıcı eylemleri (yenile, yeniden yükle, çıkış) yönetilir.
+ */
 @HiltViewModel
 class VerificationStatusViewModel @Inject constructor(
-    @ApplicationContext private val context: Context,
-    private val repository: StudentVerificationRepository,
     private val authRepository: AuthRepository,
+    private val verificationRepository: StudentVerificationRepository,
+    private val documentReader: PickedDocumentReader,
+    private val sessionRefresher: SessionRefresher,
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(VerificationStatusUiState())
-    val uiState: StateFlow<VerificationStatusUiState> = _uiState.asStateFlow()
+    private val _uiState = MutableStateFlow(VerificationUiState())
+    val uiState: StateFlow<VerificationUiState> = _uiState.asStateFlow()
 
-    init {
-        refresh()
-    }
-
+    /** Oturum belirtecini zorla yeniler (JWT'deki rol/durum güncellenir), sonra durumu baştan çözer. */
     fun refresh() {
+        if (_uiState.value.isRefreshing) return
         viewModelScope.launch {
             _uiState.update { it.copy(isRefreshing = true) }
-            val status = runCatching { repository.fetchStatus() }.getOrNull()
-            _uiState.update { it.copy(isRefreshing = false, rejectionReason = status?.rejectionReason) }
+            try {
+                authRepository.refreshSession()
+                verificationRepository.fetchStatus()
+                sessionRefresher.requestRefresh()
+            } catch (e: AppError) {
+                _uiState.update { it.copy(message = e.toUiText()) }
+            } finally {
+                _uiState.update { it.copy(isRefreshing = false) }
+            }
         }
     }
 
-    /** RejectedScreen'de yeni bir PDF seçildiğinde çağrılır. */
+    /** Reddedilen başvuru için seçilen yeni PDF'i doğrulayıp gönderir. */
     fun resubmitDocument(uri: Uri) {
+        if (_uiState.value.isResubmitting) return
         viewModelScope.launch {
-            _uiState.update { it.copy(isResubmitting = true, errorMessageRes = null) }
+            _uiState.update { it.copy(isResubmitting = true) }
             try {
-                val bytes = context.contentResolver.openInputStream(uri)?.use { it.readBytes() }
-                    ?: error("Dosya okunamadı.")
-                repository.submitDocument(bytes)
-                refresh()
-                // Başarılı gönderim sonrası RootViewModel PendingReview'e OTOMATİK
-                // yönlendirir (observeAuthState + fetchStatus).
-            } catch (e: Exception) {
-                _uiState.update { it.copy(errorMessageRes = R.string.register_document_submit_error) }
+                val document = documentReader.read(uri)
+                verificationRepository.submitDocument(document.bytes)
+                // Başvuru alındı: kök yönlendirme "Başvurunuz İnceleniyor" ekranına geçer.
+                sessionRefresher.requestRefresh()
+            } catch (e: AppError) {
+                val message = if (e is AppError.Unknown) uiText(R.string.register_document_submit_error) else e.toUiText()
+                _uiState.update { it.copy(message = message) }
             } finally {
                 _uiState.update { it.copy(isResubmitting = false) }
             }
         }
     }
 
-    fun consumeError() {
-        _uiState.update { it.copy(errorMessageRes = null) }
-    }
+    fun consumeMessage() = _uiState.update { it.copy(message = null) }
 
     fun signOut() {
-        viewModelScope.launch { authRepository.signOut() }
-        // RootViewModel oturum kapanışını observeAuthState üzerinden OTOMATİK
-        // yakalayıp Welcome'a yönlendirir — burada elle navigasyon yapılmaz.
+        viewModelScope.launch {
+            try {
+                authRepository.signOut()
+            } catch (_: AppError) {
+                // Yerel oturum yine de kapanır; yönlendirmeyi RootViewModel yapar.
+            }
+        }
     }
 }

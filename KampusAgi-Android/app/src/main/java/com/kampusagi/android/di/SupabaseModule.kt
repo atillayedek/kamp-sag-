@@ -1,5 +1,6 @@
 package com.kampusagi.android.di
 
+import com.kampusagi.android.BuildConfig
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -14,17 +15,11 @@ import io.github.jan.supabase.storage.Storage
 import javax.inject.Singleton
 
 /**
- * anon/publishable key istemcide bulunması GÜVENLİDİR — gerçek güvenlik
- * sınırı burada değil, PostgreSQL Row Level Security'dedir (bkz.
- * AI_Guidelines.md §3, §45). `service_role` key ve `ANTHROPIC_API_KEY` ise
- * BURADA ASLA bulunmaz; onlar yalnızca Supabase Edge Functions
- * secret'larında tutulur.
+ * URL ve publishable (anon) anahtar `gradle.properties` -> `BuildConfig` üzerinden gelir.
+ * Publishable anahtar istemcide bulunması GÜVENLİDİR — gerçek güvenlik sınırı PostgreSQL Row Level
+ * Security'dedir (bkz. AI_Guidelines.md §3, §45). `service_role` anahtarı ve `ANTHROPIC_API_KEY`
+ * BURADA ASLA bulunmaz; onlar yalnızca Supabase Edge Function secret'larındadır.
  */
-private object SupabaseConfig {
-    const val PROJECT_URL = "https://ggphcgapgwrcdumfldsc.supabase.co"
-    const val PUBLISHABLE_KEY = "sb_publishable_LN4ZITD80GAoIt-dBk379w_BKguB6mR"
-}
-
 @Module
 @InstallIn(SingletonComponent::class)
 object SupabaseModule {
@@ -32,8 +27,8 @@ object SupabaseModule {
     @Provides
     @Singleton
     fun provideSupabaseClient(): SupabaseClient = createSupabaseClient(
-        supabaseUrl = SupabaseConfig.PROJECT_URL,
-        supabaseKey = SupabaseConfig.PUBLISHABLE_KEY,
+        supabaseUrl = BuildConfig.SUPABASE_URL,
+        supabaseKey = BuildConfig.SUPABASE_PUBLISHABLE_KEY,
     ) {
         install(Auth)
         install(Postgrest)

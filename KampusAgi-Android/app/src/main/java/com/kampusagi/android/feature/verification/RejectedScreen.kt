@@ -2,15 +2,17 @@ package com.kampusagi.android.feature.verification
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Cancel
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -22,18 +24,21 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kampusagi.android.R
-import com.kampusagi.android.core.designsystem.KampusAgiDangerTextButton
-import com.kampusagi.android.core.designsystem.KampusAgiSecondaryButton
-import com.kampusagi.android.core.designsystem.KampusAgiSpacing
-import com.kampusagi.android.core.designsystem.KampusAgiTheme
+import com.kampusagi.android.core.designsystem.Dimens
+import com.kampusagi.android.core.designsystem.LightDarkPreviews
+import com.kampusagi.android.core.designsystem.PreviewSurface
+import com.kampusagi.android.core.designsystem.appColors
+import com.kampusagi.android.core.designsystem.appText
+import com.kampusagi.android.core.designsystem.component.AppCard
+import com.kampusagi.android.core.designsystem.component.PrimaryButton
+import com.kampusagi.android.core.designsystem.component.SecondaryButton
+import com.kampusagi.android.core.designsystem.component.TextDangerButton
 
+/** `reason` moderatörün veritabanına yazdığı red gerekçesidir (sabit metin değil); yoksa nötr bir açıklama gösterilir. */
 @Composable
 fun RejectedScreen(
     reason: String?,
@@ -42,95 +47,85 @@ fun RejectedScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
 
-    val errorText = uiState.errorMessageRes?.let { stringResource(it) }
-    LaunchedEffect(errorText) {
-        errorText?.let {
-            snackbarHostState.showSnackbar(it)
-            viewModel.consumeError()
+    val messageText = uiState.message?.asString()
+    LaunchedEffect(messageText) {
+        if (messageText != null) {
+            snackbarHostState.showSnackbar(messageText)
+            viewModel.consumeMessage()
         }
     }
 
-    val documentPickerLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.OpenDocument(),
-    ) { uri -> uri?.let(viewModel::resubmitDocument) }
+    val documentPicker = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
+        if (uri != null) viewModel.resubmitDocument(uri)
+    }
 
     RejectedScreenContent(
-        reason = uiState.rejectionReason ?: reason,
+        reason = reason,
         isResubmitting = uiState.isResubmitting,
         snackbarHostState = snackbarHostState,
-        onPickDocument = { documentPickerLauncher.launch(arrayOf("application/pdf")) },
+        onPickDocument = { documentPicker.launch(arrayOf("application/pdf")) },
         onLogout = viewModel::signOut,
     )
 }
 
 @Composable
-private fun RejectedScreenContent(
+internal fun RejectedScreenContent(
     reason: String?,
     isResubmitting: Boolean,
     snackbarHostState: SnackbarHostState,
     onPickDocument: () -> Unit,
     onLogout: () -> Unit,
 ) {
-    Scaffold(snackbarHost = { SnackbarHost(snackbarHostState) }) { padding ->
+    val colors = MaterialTheme.appColors
+    Scaffold(containerColor = colors.appBg, snackbarHost = { SnackbarHost(snackbarHostState) }) { padding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
                 .verticalScroll(rememberScrollState())
-                .padding(KampusAgiSpacing.screenMargin),
+                .padding(horizontal = Dimens.screenPaddingH, vertical = Dimens.sectionSpacing),
             horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(Dimens.sectionSpacing),
         ) {
-            Text(text = "❌", fontSize = 56.sp)
-            Text(
-                text = stringResource(R.string.rejected_title),
-                style = MaterialTheme.typography.headlineSmall,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.padding(top = 12.dp, bottom = KampusAgiSpacing.itemSpacing),
+            Icon(
+                imageVector = Icons.Filled.Cancel,
+                contentDescription = null,
+                tint = colors.rejected,
+                modifier = Modifier.size(64.dp),
             )
+            Text(text = stringResource(R.string.rejected_title), style = MaterialTheme.appText.titleLarge)
 
-            OutlinedCard(shape = MaterialTheme.shapes.large, modifier = Modifier.fillMaxWidth()) {
-                Column(modifier = Modifier.padding(14.dp)) {
-                    Text(
-                        text = stringResource(R.string.rejected_reason_label),
-                        style = MaterialTheme.typography.labelMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                    Text(
-                        text = reason ?: stringResource(R.string.rejected_default_reason),
-                        style = MaterialTheme.typography.bodyMedium,
-                        modifier = Modifier.padding(top = 4.dp),
-                    )
-                }
+            AppCard {
+                Text(text = stringResource(R.string.rejected_reason_label), style = MaterialTheme.appText.reasonLabel)
+                Text(
+                    text = reason?.takeIf { it.isNotBlank() } ?: stringResource(R.string.rejected_default_reason),
+                    style = MaterialTheme.appText.body,
+                    modifier = Modifier.padding(top = 4.dp),
+                )
             }
 
-            Spacer(modifier = Modifier.padding(top = KampusAgiSpacing.itemSpacing))
+            Text(text = stringResource(R.string.rejected_retry_hint), style = MaterialTheme.appText.bodyCenter)
 
-            Text(
-                text = stringResource(R.string.rejected_retry_hint),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                textAlign = TextAlign.Center,
-            )
-
-            Spacer(modifier = Modifier.padding(top = KampusAgiSpacing.itemSpacing))
-
-            KampusAgiSecondaryButton(
-                text = stringResource(R.string.register_document_pick_button),
-                onClick = onPickDocument,
-                enabled = !isResubmitting,
-            )
-            KampusAgiDangerTextButton(text = stringResource(R.string.logout_button), onClick = onLogout)
+            if (isResubmitting) {
+                PrimaryButton(
+                    text = stringResource(R.string.register_document_pick_button),
+                    onClick = {},
+                    isLoading = true,
+                )
+            } else {
+                SecondaryButton(text = stringResource(R.string.register_document_pick_button), onClick = onPickDocument)
+            }
+            TextDangerButton(text = stringResource(R.string.logout_button), onClick = onLogout)
         }
     }
 }
 
-@Preview(showBackground = true)
-@Preview(showBackground = true, uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
+@LightDarkPreviews
 @Composable
 private fun RejectedScreenPreview() {
-    KampusAgiTheme {
+    PreviewSurface {
         RejectedScreenContent(
-            reason = "Belge okunamıyor, geçersiz veya güncel değil.",
+            reason = "Belge okunamıyor.",
             isResubmitting = false,
             snackbarHostState = remember { SnackbarHostState() },
             onPickDocument = {},

@@ -2,6 +2,34 @@
 <resources>
     <string name="app_name">KampüsAğı</string>
 
+    <!-- Ortak -->
+    <string name="common_loading">Yükleniyor</string>
+    <string name="common_retry">Tekrar Dene</string>
+    <string name="common_error_title">Bir sorun oluştu</string>
+    <string name="common_cancel">Vazgeç</string>
+    <string name="common_ok">Tamam</string>
+    <string name="logout_button">Çıkış Yap</string>
+    <string name="nav_back_cd">Geri</string>
+    <string name="field_password_show_cd">Şifreyi göster</string>
+    <string name="field_password_hide_cd">Şifreyi gizle</string>
+
+    <!-- Tipli hata mesajları (AppError -> kullanıcı metni) -->
+    <string name="error_network">İnternet bağlantısı kurulamadı. Bağlantınızı kontrol edip tekrar deneyin.</string>
+    <string name="error_invalid_credentials">E-posta veya şifre hatalı.</string>
+    <string name="error_email_not_confirmed">E-posta adresiniz henüz doğrulanmadı. Gelen kutunuzdaki bağlantıya tıklayın.</string>
+    <string name="error_email_already_registered">Bu e-posta adresiyle zaten bir hesap var. Giriş yapmayı deneyin.</string>
+    <string name="error_weak_password">Şifre çok zayıf. En az 6 karakter kullanın.</string>
+    <string name="error_invalid_email">Geçerli bir e-posta adresi girin.</string>
+    <string name="error_rate_limited">Çok fazla deneme yaptınız. Lütfen biraz bekleyip tekrar deneyin.</string>
+    <string name="error_unauthorized">Oturumunuz sona erdi. Lütfen tekrar giriş yapın.</string>
+    <string name="error_forbidden">Bu işlem için yetkiniz yok.</string>
+    <string name="error_not_found">İstenen içerik bulunamadı.</string>
+    <string name="error_username_taken">Bu kullanıcı adı alınmış. Başka bir tane deneyin.</string>
+    <string name="error_file_unreadable">Dosya okunamadı. Başka bir dosya seçin.</string>
+    <string name="error_file_too_large">Dosya çok büyük. En fazla %1$d MB olabilir.</string>
+    <string name="error_file_not_pdf">Yalnızca PDF dosyası yükleyebilirsiniz.</string>
+    <string name="error_unknown">Beklenmeyen bir hata oluştu. Lütfen tekrar deneyin.</string>
+
     <!-- Welcome -->
     <string name="welcome_title">KampüsAğı</string>
     <string name="welcome_subtitle">Kampüsündeki öğrencilerle ihtiyaçlarını eşleştir.</string>
@@ -10,33 +38,65 @@
 
     <!-- Login -->
     <string name="login_title">Giriş Yap</string>
-    <string name="login_email_label">E-posta</string>
-    <string name="login_email_placeholder">ada.yilmaz@ogr.metu.edu.tr</string>
-    <string name="login_password_label">Şifre</string>
-    <string name="login_password_show_cd">Şifreyi göster</string>
-    <string name="login_password_hide_cd">Şifreyi gizle</string>
+    <string name="login_email_label">E-POSTA</string>
+    <string name="login_password_label">ŞİFRE</string>
     <string name="login_forgot_password">Şifremi unuttum</string>
     <string name="login_submit_button">Giriş Yap</string>
     <string name="login_divider_or">veya</string>
     <string name="login_google_button">Google ile devam et</string>
-    <string name="login_error_generic">Giriş başarısız. E-posta veya şifrenizi kontrol edin.</string>
-    <string name="login_password_reset_missing_email">Şifre sıfırlama için önce e-posta adresinizi girin.</string>
-    <string name="login_password_reset_failed">Şifre sıfırlama bağlantısı gönderilemedi.</string>
     <string name="login_google_error">Google ile giriş başarısız.</string>
+    <string name="login_google_not_configured">Google ile giriş henüz yapılandırılmadı.</string>
+    <string name="login_password_reset_missing_email">Şifre sıfırlama için önce e-posta adresinizi girin.</string>
+    <string name="login_password_reset_sent">Şifre sıfırlama bağlantısı e-posta adresinize gönderildi.</string>
+    <string name="login_password_reset_failed">Şifre sıfırlama bağlantısı gönderilemedi.</string>
 
     <!-- Register — genel -->
     <string name="register_title">Kayıt Ol</string>
     <string name="register_step_format">%1$d/%2$d — %3$s</string>
     <string name="register_step_account_title">Hesap Bilgileri</string>
-    <string name="register_step_unclear_title">İçerik Netleşmedi</string>
-    <string name="register_step_unclear_message">Bu adımın içeriği henüz netleşmedi.</string>
-    <string name="register_account_heading">E-posta ve şifrenizi belirleyin</string>
-    <string name="register_password_hint">En az 6 karakter</string>
+    <string name="register_step_personal_title">Kişisel Bilgiler</string>
+    <string name="register_step_university_title">Üniversite</string>
+    <string name="register_step_department_title">Bölüm</string>
+    <string name="register_step_summary_title">Özet</string>
     <string name="register_continue_button">Devam Et</string>
     <string name="register_back_button">Geri</string>
-    <string name="register_account_error">Hesap oluşturulamadı. Bilgilerinizi kontrol edip tekrar deneyin.</string>
 
-    <!-- Register — belge adımı -->
+    <!-- Register — adım 1: hesap -->
+    <string name="register_account_heading">E-posta ve şifrenizi belirleyin</string>
+    <string name="register_password_hint">En az 6 karakter</string>
+
+    <!-- Register — e-posta doğrulama alt durumu -->
+    <string name="register_confirm_heading">E-postanı doğrula</string>
+    <string name="register_confirm_body">%1$s adresine bir doğrulama bağlantısı gönderdik. Bağlantıya tıkladıktan sonra buraya dönüp devam et.</string>
+    <string name="register_confirm_continue_button">Doğruladım, Devam Et</string>
+    <string name="register_confirm_resend_button">Bağlantıyı Tekrar Gönder</string>
+    <string name="register_confirm_resent">Doğrulama e-postası tekrar gönderildi.</string>
+
+    <!-- Register — adım 2: kişisel bilgiler -->
+    <string name="register_personal_heading">Seni tanıyalım</string>
+    <string name="register_full_name_label">AD SOYAD</string>
+    <string name="register_username_label">KULLANICI ADI</string>
+    <string name="register_username_hint">3–30 karakter; küçük harf, rakam ve alt çizgi kullanabilirsin.</string>
+    <string name="register_username_invalid">Kullanıcı adı 3–30 karakter olmalı; yalnızca küçük harf, rakam ve alt çizgi içerebilir.</string>
+
+    <!-- Register — adım 3: üniversite -->
+    <string name="register_university_heading">Üniversiteni seç</string>
+    <string name="register_university_search_label">ÜNİVERSİTE ARA</string>
+    <string name="register_university_empty_title">Üniversite bulunamadı</string>
+    <string name="register_university_empty_message">Aramana uyan bir üniversite yok. Farklı bir arama dene.</string>
+    <string name="register_university_selected_cd">Seçili</string>
+
+    <!-- Register — adım 4: bölüm -->
+    <string name="register_department_heading">Bölümün nedir?</string>
+    <string name="register_department_label">BÖLÜM</string>
+
+    <!-- Register — adım 5: özet -->
+    <string name="register_summary_heading">Bilgilerini kontrol et</string>
+    <string name="register_summary_university_label">ÜNİVERSİTE</string>
+    <string name="register_summary_save_button">Kaydet ve Devam Et</string>
+    <string name="register_profile_save_error">Bilgilerin kaydedilemedi. Lütfen tekrar deneyin.</string>
+
+    <!-- Register — adım 6: belge -->
     <string name="register_document_step_title">Öğrenci Belgesi</string>
     <string name="register_document_upload_title">Öğrenci belgenizi yükleyin</string>
     <string name="register_document_help_title">Neden bu belge isteniyor?</string>
@@ -46,23 +106,26 @@
     <string name="register_document_remove_cd">Seçilen dosyayı kaldır</string>
     <string name="register_document_submit_button">Başvuruyu Gönder</string>
     <string name="register_document_submit_error">Belge yüklenemedi. Lütfen tekrar deneyin.</string>
+    <string name="register_document_uploading">Belge yükleniyor…</string>
 
     <!-- Pending -->
     <string name="pending_title">Başvurunuz İnceleniyor</string>
-    <string name="pending_message">Öğrenci belgeniz admin ekibimiz tarafından kontrol ediliyor.\n\nBu işlem tamamlandığında bildirim alacaksınız.</string>
+    <string name="pending_message">Öğrenci belgeniz admin ekibimiz tarafından kontrol ediliyor. Bu işlem tamamlandığında bildirim alacaksınız.</string>
     <string name="pending_refresh_button">Başvuru Durumunu Yenile</string>
 
     <!-- Rejected -->
     <string name="rejected_title">Belgeniz Doğrulanamadı</string>
     <string name="rejected_reason_label">SEBEP</string>
-    <string name="rejected_default_reason">Belge okunamıyor, geçersiz veya güncel değil.</string>
+    <string name="rejected_default_reason">Moderatör ekibi belgenizi onaylamadı.</string>
     <string name="rejected_retry_hint">Lütfen yeni bir PDF yükleyin.</string>
 
-    <!-- Onaylandı (yalnızca yer tutucu — ana uygulama bu turda istenmedi) -->
-    <string name="approved_title">Hoş geldin!</string>
-    <string name="approved_message">Öğrenci doğrulaman onaylandı. Ana uygulama ekranları (Topluluk, İhtiyaç, Sıralama, Mesajlar, Profil) bu tasarım turunda istenmedi.</string>
+    <!-- Tasarım sistemi erişilebilirlik / ortak bileşen metinleri -->
+    <string name="chat_typing_cd">Karşı taraf yazıyor</string>
+    <string name="chat_send_cd">Gönder</string>
+    <string name="chat_input_placeholder">Mesaj yaz…</string>
+    <string name="match_score_format">%%%1$d Anlamsal Eşleşme</string>
 
-    <!-- Ortak -->
-    <string name="logout_button">Çıkış Yap</string>
-    <string name="nav_back_cd">Geri</string>
+    <!-- Onaylı kullanıcı — ana uygulama (Görev 6+ ile genişler) -->
+    <string name="approved_title">Hoş geldin!</string>
+    <string name="approved_message">Öğrenci doğrulaman onaylandı.</string>
 </resources>

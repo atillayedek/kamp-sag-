@@ -1,99 +1,117 @@
 package com.kampusagi.android.feature.verification
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.weight
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.HourglassEmpty
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.PullToRefreshBox
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kampusagi.android.R
-import com.kampusagi.android.core.designsystem.KampusAgiDangerTextButton
-import com.kampusagi.android.core.designsystem.KampusAgiPrimaryButton
-import com.kampusagi.android.core.designsystem.KampusAgiSpacing
-import com.kampusagi.android.core.designsystem.KampusAgiTheme
+import com.kampusagi.android.core.designsystem.Dimens
+import com.kampusagi.android.core.designsystem.LightDarkPreviews
+import com.kampusagi.android.core.designsystem.PreviewSurface
+import com.kampusagi.android.core.designsystem.appColors
+import com.kampusagi.android.core.designsystem.appText
+import com.kampusagi.android.core.designsystem.component.PrimaryButton
+import com.kampusagi.android.core.designsystem.component.TextDangerButton
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PendingReviewScreen(viewModel: VerificationStatusViewModel = hiltViewModel()) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    val messageText = uiState.message?.asString()
+    LaunchedEffect(messageText) {
+        if (messageText != null) {
+            snackbarHostState.showSnackbar(messageText)
+            viewModel.consumeMessage()
+        }
+    }
+
     PendingReviewScreenContent(
         isRefreshing = uiState.isRefreshing,
+        snackbarHostState = snackbarHostState,
         onRefresh = viewModel::refresh,
         onLogout = viewModel::signOut,
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun PendingReviewScreenContent(
+internal fun PendingReviewScreenContent(
     isRefreshing: Boolean,
+    snackbarHostState: SnackbarHostState,
     onRefresh: () -> Unit,
     onLogout: () -> Unit,
 ) {
-    Scaffold { padding ->
-        PullToRefreshBox(
-            isRefreshing = isRefreshing,
-            onRefresh = onRefresh,
-            modifier = Modifier.fillMaxSize().padding(padding),
+    val colors = MaterialTheme.appColors
+    Scaffold(containerColor = colors.appBg, snackbarHost = { SnackbarHost(snackbarHostState) }) { padding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = Dimens.screenPaddingH, vertical = Dimens.sectionSpacing),
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
+            Spacer(modifier = Modifier.weight(1f))
+
             Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
-                    .padding(KampusAgiSpacing.screenMargin),
                 horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
-                Spacer(modifier = Modifier.weight(1f))
-
-                Text(text = "⏳", fontSize = 56.sp)
-                Text(
-                    text = stringResource(R.string.pending_title),
-                    style = MaterialTheme.typography.headlineSmall,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(top = 12.dp, bottom = 8.dp),
+                Icon(
+                    imageVector = Icons.Filled.HourglassEmpty,
+                    contentDescription = null,
+                    tint = colors.pending,
+                    modifier = Modifier.size(64.dp),
                 )
-                Text(
-                    text = stringResource(R.string.pending_message),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    textAlign = TextAlign.Center,
-                )
+                Text(text = stringResource(R.string.pending_title), style = MaterialTheme.appText.titleLarge)
+                Text(text = stringResource(R.string.pending_message), style = MaterialTheme.appText.bodyCenter)
+            }
 
-                Spacer(modifier = Modifier.weight(1f))
+            Spacer(modifier = Modifier.weight(1f))
 
-                KampusAgiPrimaryButton(
+            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                PrimaryButton(
                     text = stringResource(R.string.pending_refresh_button),
                     onClick = onRefresh,
                     isLoading = isRefreshing,
                 )
-                KampusAgiDangerTextButton(text = stringResource(R.string.logout_button), onClick = onLogout)
+                TextDangerButton(text = stringResource(R.string.logout_button), onClick = onLogout)
             }
         }
     }
 }
 
-@Preview(showBackground = true)
-@Preview(showBackground = true, uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
+@LightDarkPreviews
 @Composable
 private fun PendingReviewScreenPreview() {
-    KampusAgiTheme {
-        PendingReviewScreenContent(isRefreshing = false, onRefresh = {}, onLogout = {})
+    PreviewSurface {
+        PendingReviewScreenContent(
+            isRefreshing = false,
+            snackbarHostState = remember { SnackbarHostState() },
+            onRefresh = {},
+            onLogout = {},
+        )
     }
 }

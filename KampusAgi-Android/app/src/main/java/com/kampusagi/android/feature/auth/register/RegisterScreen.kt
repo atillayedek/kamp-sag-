@@ -3,40 +3,37 @@ package com.kampusagi.android.feature.auth.register
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.weight
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material3.CenterAlignedTopAppBar
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kampusagi.android.R
-import com.kampusagi.android.core.designsystem.KampusAgiPrimaryButton
-import com.kampusagi.android.core.designsystem.KampusAgiSpacing
-import com.kampusagi.android.core.designsystem.KampusAgiStepIndicator
-import com.kampusagi.android.core.designsystem.KampusAgiTheme
-import com.kampusagi.android.feature.auth.register.components.DocumentStep
+import com.kampusagi.android.core.designsystem.LightDarkPreviews
+import com.kampusagi.android.core.designsystem.PreviewSurface
+import com.kampusagi.android.core.designsystem.appColors
+import com.kampusagi.android.core.designsystem.appText
+import com.kampusagi.android.core.designsystem.component.AppTopBar
+import com.kampusagi.android.feature.auth.register.steps.AccountStep
+import com.kampusagi.android.feature.auth.register.steps.DepartmentStep
+import com.kampusagi.android.feature.auth.register.steps.DocumentStep
+import com.kampusagi.android.feature.auth.register.steps.EmailConfirmationStep
+import com.kampusagi.android.feature.auth.register.steps.PersonalStep
+import com.kampusagi.android.feature.auth.register.steps.SummaryStep
+import com.kampusagi.android.feature.auth.register.steps.UniversityStep
 
 @Composable
 fun RegisterScreen(
@@ -46,244 +43,138 @@ fun RegisterScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
 
-    val errorText = uiState.errorMessageRes?.let { stringResource(it) }
-    LaunchedEffect(errorText) {
-        errorText?.let {
-            snackbarHostState.showSnackbar(it)
-            viewModel.consumeError()
+    val messageText = uiState.message?.asString()
+    LaunchedEffect(messageText) {
+        if (messageText != null) {
+            snackbarHostState.showSnackbar(messageText)
+            viewModel.consumeMessage()
         }
     }
 
-    val documentPickerLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.OpenDocument(),
-    ) { uri -> uri?.let(viewModel::onDocumentSelected) }
-
-    // Sistem geri tuşu bir önceki adıma dönsün (bkz. tasarım mesajı).
-    BackHandler(enabled = uiState.currentStep != RegisterStep.ACCOUNT_INFO) {
-        viewModel.goBack()
+    val documentPicker = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
+        if (uri != null) viewModel.onDocumentPicked(uri)
     }
 
+    // Sistem geri tuşu bir önceki adıma dönsün; ilk adımdaysa (veya doğrulama beklerken) normal davranış.
+    BackHandler(enabled = uiState.canGoBack) { viewModel.onBack() }
+
     RegisterScreenContent(
-        uiState = uiState,
+        state = uiState,
         snackbarHostState = snackbarHostState,
-        onBackClick = {
-            if (uiState.currentStep == RegisterStep.ACCOUNT_INFO) onBackClick() else viewModel.goBack()
-        },
-        onEmailChange = viewModel::onEmailChange,
-        onPasswordChange = viewModel::onPasswordChange,
-        onContinueAccountInfo = viewModel::createAccountAndAdvance,
-        onAdvancePlaceholder = viewModel::advance,
-        onGoBackStep = { viewModel.goBack() },
-        onPickDocument = { documentPickerLauncher.launch(arrayOf("application/pdf")) },
-        onClearDocument = viewModel::clearSelectedDocument,
-        onToggleHelpSheet = viewModel::toggleHelpSheet,
-        onSubmitDocument = viewModel::submitDocument,
+        actions = RegisterActions(
+            onTopBack = { if (!viewModel.onBack()) onBackClick() },
+            onEmailChange = viewModel::onEmailChange,
+            onPasswordChange = viewModel::onPasswordChange,
+            onFullNameChange = viewModel::onFullNameChange,
+            onUsernameChange = viewModel::onUsernameChange,
+            onUniversityQueryChange = viewModel::onUniversityQueryChange,
+            onUniversitySelected = viewModel::onUniversitySelected,
+            onRetryUniversities = viewModel::loadUniversities,
+            onDepartmentChange = viewModel::onDepartmentChange,
+            onContinue = viewModel::onContinue,
+            onBack = { viewModel.onBack() },
+            onConfirmEmail = viewModel::confirmEmailAndContinue,
+            onResendConfirmation = viewModel::resendConfirmation,
+            onEditAccountInfo = viewModel::editAccountInfo,
+            onPickDocument = { documentPicker.launch(arrayOf("application/pdf")) },
+            onClearDocument = viewModel::clearDocument,
+            onShowHelp = viewModel::setHelpVisible,
+            onSignOut = viewModel::signOut,
+        ),
     )
 }
 
-/** Hilt/ViewModel bağımlılığı olmayan durumsuz içerik — @Preview bunu kullanır. */
+internal class RegisterActions(
+    val onTopBack: () -> Unit,
+    val onEmailChange: (String) -> Unit,
+    val onPasswordChange: (String) -> Unit,
+    val onFullNameChange: (String) -> Unit,
+    val onUsernameChange: (String) -> Unit,
+    val onUniversityQueryChange: (String) -> Unit,
+    val onUniversitySelected: (com.kampusagi.android.domain.university.University) -> Unit,
+    val onRetryUniversities: () -> Unit,
+    val onDepartmentChange: (String) -> Unit,
+    val onContinue: () -> Unit,
+    val onBack: () -> Unit,
+    val onConfirmEmail: () -> Unit,
+    val onResendConfirmation: () -> Unit,
+    val onEditAccountInfo: () -> Unit,
+    val onPickDocument: () -> Unit,
+    val onClearDocument: () -> Unit,
+    val onShowHelp: (Boolean) -> Unit,
+    val onSignOut: () -> Unit,
+)
+
+/** Hilt/ViewModel bağımlılığı olmayan durumsuz içerik — @Preview ve testler bunu kullanır. */
 @Composable
-private fun RegisterScreenContent(
-    uiState: RegisterUiState,
+internal fun RegisterScreenContent(
+    state: RegisterUiState,
     snackbarHostState: SnackbarHostState,
-    onBackClick: () -> Unit,
-    onEmailChange: (String) -> Unit,
-    onPasswordChange: (String) -> Unit,
-    onContinueAccountInfo: () -> Unit,
-    onAdvancePlaceholder: () -> Unit,
-    onGoBackStep: () -> Unit,
-    onPickDocument: () -> Unit,
-    onClearDocument: () -> Unit,
-    onToggleHelpSheet: (Boolean) -> Unit,
-    onSubmitDocument: () -> Unit,
+    actions: RegisterActions,
 ) {
+    val colors = MaterialTheme.appColors
     Scaffold(
+        containerColor = colors.appBg,
         topBar = {
-            CenterAlignedTopAppBar(
-                title = { Text(stringResource(R.string.register_title)) },
-                navigationIcon = {
-                    IconButton(onClick = onBackClick) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.nav_back_cd))
+            AppTopBar(
+                title = stringResource(R.string.register_title),
+                onBack = actions.onTopBack.takeIf { !state.isSignedIn || state.canGoBack },
+                actions = {
+                    if (state.isSignedIn) {
+                        TextButton(onClick = actions.onSignOut) {
+                            Text(
+                                text = stringResource(R.string.logout_button),
+                                style = MaterialTheme.appText.fieldLabel.copy(color = colors.rejected),
+                            )
+                        }
                     }
                 },
             )
         },
         snackbarHost = { SnackbarHost(snackbarHostState) },
     ) { padding ->
-        Column(modifier = Modifier.fillMaxSize().padding(padding)) {
-            when (uiState.currentStep) {
-                RegisterStep.ACCOUNT_INFO -> AccountInfoStep(
-                    uiState = uiState,
-                    onEmailChange = onEmailChange,
-                    onPasswordChange = onPasswordChange,
-                    onContinue = onContinueAccountInfo,
+        val onBack = actions.onBack.takeIf { state.canGoBack }
+
+        Box(modifier = Modifier.fillMaxSize().padding(padding).imePadding()) {
+        when {
+            state.step == RegisterStep.ACCOUNT_INFO && state.awaitingEmailConfirmation ->
+                EmailConfirmationStep(
+                    state = state,
+                    onConfirmed = actions.onConfirmEmail,
+                    onResend = actions.onResendConfirmation,
+                    onEditEmail = actions.onEditAccountInfo,
                 )
-                RegisterStep.STUDENT_DOCUMENT -> DocumentStep(
-                    isLoading = uiState.isLoading,
-                    selectedDocumentName = uiState.selectedDocumentName,
-                    isHelpSheetVisible = uiState.isHelpSheetVisible,
-                    onToggleHelpSheet = onToggleHelpSheet,
-                    onPickDocument = onPickDocument,
-                    onClearDocument = onClearDocument,
-                    onBack = onGoBackStep,
-                    onSubmit = onSubmitDocument,
-                    canSubmit = uiState.canSubmitDocument,
+            state.step == RegisterStep.ACCOUNT_INFO ->
+                AccountStep(state, actions.onEmailChange, actions.onPasswordChange, actions.onContinue)
+            state.step == RegisterStep.PERSONAL_INFO ->
+                PersonalStep(state, actions.onFullNameChange, actions.onUsernameChange, actions.onContinue, onBack)
+            state.step == RegisterStep.UNIVERSITY ->
+                UniversityStep(
+                    state, actions.onUniversityQueryChange, actions.onUniversitySelected,
+                    actions.onRetryUniversities, actions.onContinue, onBack,
                 )
-                else -> UnclearStep(
-                    currentStep = uiState.currentStep,
-                    onBack = onGoBackStep,
-                    onAdvance = onAdvancePlaceholder,
+            state.step == RegisterStep.DEPARTMENT ->
+                DepartmentStep(state, actions.onDepartmentChange, actions.onContinue, onBack)
+            state.step == RegisterStep.SUMMARY ->
+                SummaryStep(state, actions.onContinue, onBack)
+            else ->
+                DocumentStep(
+                    state, actions.onPickDocument, actions.onClearDocument, actions.onShowHelp,
+                    actions.onContinue, onBack,
                 )
-            }
+        }
         }
     }
 }
 
+@LightDarkPreviews
 @Composable
-private fun AccountInfoStep(
-    uiState: RegisterUiState,
-    onEmailChange: (String) -> Unit,
-    onPasswordChange: (String) -> Unit,
-    onContinue: () -> Unit,
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(KampusAgiSpacing.screenMargin),
-        verticalArrangement = Arrangement.spacedBy(KampusAgiSpacing.itemSpacing),
-    ) {
-        KampusAgiStepIndicator(
-            currentStep = RegisterStep.ACCOUNT_INFO.stepNumber,
-            totalSteps = RegisterStep.TOTAL_STEPS,
-            label = stringResource(
-                R.string.register_step_format,
-                RegisterStep.ACCOUNT_INFO.stepNumber,
-                RegisterStep.TOTAL_STEPS,
-                stringResource(R.string.register_step_account_title),
-            ),
-        )
-
-        Text(stringResource(R.string.register_account_heading), style = MaterialTheme.typography.titleLarge)
-
-        OutlinedTextField(
-            value = uiState.email,
-            onValueChange = onEmailChange,
-            label = { Text(stringResource(R.string.login_email_label)) },
-            singleLine = true,
-            shape = MaterialTheme.shapes.small,
-            modifier = Modifier.fillMaxWidth(),
-        )
-
-        OutlinedTextField(
-            value = uiState.password,
-            onValueChange = onPasswordChange,
-            label = { Text(stringResource(R.string.login_password_label)) },
-            placeholder = { Text(stringResource(R.string.register_password_hint)) },
-            singleLine = true,
-            shape = MaterialTheme.shapes.small,
-            visualTransformation = PasswordVisualTransformation(),
-            modifier = Modifier.fillMaxWidth(),
-        )
-
-        Spacer(modifier = Modifier.weight(1f))
-
-        KampusAgiPrimaryButton(
-            text = stringResource(R.string.register_continue_button),
-            onClick = onContinue,
-            enabled = uiState.canSubmitAccountInfo,
-            isLoading = uiState.isLoading,
-        )
-    }
-}
-
-/**
- * .ACCOUNT_INFO ve .STUDENT_DOCUMENT dışındaki adımlar için içerik hiçbir
- * kaynakta verilmedi — kasıtlı olarak "netleşmedi" gösterilir, tamamlanmış
- * bir özellik gibi sunulmaz (bkz. RegisterViewModel.kt üstündeki not).
- */
-@Composable
-private fun UnclearStep(
-    currentStep: RegisterStep,
-    onBack: () -> Unit,
-    onAdvance: () -> Unit,
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(KampusAgiSpacing.screenMargin),
-        verticalArrangement = Arrangement.spacedBy(KampusAgiSpacing.itemSpacing),
-    ) {
-        KampusAgiStepIndicator(
-            currentStep = currentStep.stepNumber,
-            totalSteps = RegisterStep.TOTAL_STEPS,
-            label = stringResource(
-                R.string.register_step_format,
-                currentStep.stepNumber,
-                RegisterStep.TOTAL_STEPS,
-                stringResource(R.string.register_step_unclear_title),
-            ),
-        )
-        Spacer(modifier = Modifier.weight(1f))
-        Text(
-            text = stringResource(R.string.register_step_unclear_message),
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-        Spacer(modifier = Modifier.weight(1f))
-        androidx.compose.foundation.layout.Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            androidx.compose.foundation.layout.Box(modifier = Modifier.weight(1f)) {
-                com.kampusagi.android.core.designsystem.KampusAgiSecondaryButton(
-                    text = stringResource(R.string.register_back_button),
-                    onClick = onBack,
-                )
-            }
-            androidx.compose.foundation.layout.Box(modifier = Modifier.weight(1f)) {
-                KampusAgiPrimaryButton(text = "İleri (geçici)", onClick = onAdvance)
-            }
-        }
-    }
-}
-
-@Preview(showBackground = true)
-@Preview(showBackground = true, uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
-@Composable
-private fun RegisterScreenAccountInfoPreview() {
-    KampusAgiTheme {
+private fun RegisterScreenPreview() {
+    PreviewSurface {
         RegisterScreenContent(
-            uiState = RegisterUiState(),
+            state = RegisterUiState(email = "ornek@kampus.edu.tr", password = "gizli1"),
             snackbarHostState = remember { SnackbarHostState() },
-            onBackClick = {},
-            onEmailChange = {},
-            onPasswordChange = {},
-            onContinueAccountInfo = {},
-            onAdvancePlaceholder = {},
-            onGoBackStep = {},
-            onPickDocument = {},
-            onClearDocument = {},
-            onToggleHelpSheet = {},
-            onSubmitDocument = {},
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Preview(showBackground = true, uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
-@Composable
-private fun RegisterScreenDocumentStepPreview() {
-    KampusAgiTheme {
-        RegisterScreenContent(
-            uiState = RegisterUiState(currentStep = RegisterStep.STUDENT_DOCUMENT, selectedDocumentName = "ogrenci_belgesi.pdf"),
-            snackbarHostState = remember { SnackbarHostState() },
-            onBackClick = {},
-            onEmailChange = {},
-            onPasswordChange = {},
-            onContinueAccountInfo = {},
-            onAdvancePlaceholder = {},
-            onGoBackStep = {},
-            onPickDocument = {},
-            onClearDocument = {},
-            onToggleHelpSheet = {},
-            onSubmitDocument = {},
+            actions = RegisterActions({}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}),
         )
     }
 }
