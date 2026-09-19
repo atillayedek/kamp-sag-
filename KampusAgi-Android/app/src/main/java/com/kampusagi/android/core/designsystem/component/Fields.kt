@@ -74,10 +74,11 @@ fun LabeledField(
                 .clip(shape)
                 .background(colors.appBg2)
                 .then(if (isError) Modifier.border(1.dp, colors.rejected, shape) else Modifier)
-                .padding(horizontal = Dimens.inputPaddingH, vertical = Dimens.inputPaddingV),
+                .padding(start = Dimens.inputPaddingH, end = if (trailing != null) 4.dp else Dimens.inputPaddingH),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Box(modifier = Modifier.weight(1f)) {
+            // Dikey iç boşluk yalnızca metin alanında; sağdaki öğe (göz ikonu) alan yüksekliğini büyütmesin.
+            Box(modifier = Modifier.weight(1f).padding(vertical = Dimens.inputPaddingV)) {
                 BasicTextField(
                     value = value,
                     onValueChange = onValueChange,

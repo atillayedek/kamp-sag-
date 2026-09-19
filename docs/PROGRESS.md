@@ -5,11 +5,28 @@
 
 ## Şu an üzerinde çalışılan görev
 
-**Görev 1–4 (keşif, derleme altyapısı, design tokens, bileşen kütüphanesi, auth ekranları)** — bkz. aşağıdaki liste.
+**Görev 5–6: sunucu tarafı (review-verification, hesap silme, university_id kilidi) + onaylı kullanıcı için sekmeli ana navigasyon.**
 
 ## Son başarılı build/test
 
-- Henüz yok (bu oturumda ilk kez gerçek Gradle derlemesi kuruluyor — bugüne kadar hiçbir Android kodu derlenmemişti).
+- 2026-09-19 — `:app:assembleDebug` ✓ (uyarısız), `:app:testDebugUnitTest` ✓ (57 test), `:app:verifyRoborazziDebug` ✓ (16 ekran görüntüsü, light+dark yan yana).
+
+## Komutlar (Windows)
+
+Proje yolunda `ı` var → Gradle test işçisi çalışmıyor; **testler için ASCII sürücü şart**:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\ensure-k-drive.ps1   # K: -> proje kökü (oturum başına bir kez)
+```
+```bash
+cd /k/KampusAgi-Android
+./gradlew :app:assembleDebug                 # derleme
+./gradlew :app:testDebugUnitTest             # birim testleri
+./gradlew :app:verifyRoborazziDebug          # ekran görüntüsü doğrulama (baseline: app/src/test/snapshots)
+./gradlew :app:recordRoborazziDebug          # UI bilerek değiştiyse baseline'ı yeniden üret, PNG'leri gözle kontrol et
+./gradlew :app:assembleRelease               # Release
+```
+Google girişi için `KampusAgi-Android/local.properties` içine `google.webClientId=...` (gizli değil, git'e girmez). Supabase URL/publishable key `gradle.properties`'te.
 
 ## Mevcut Durum (Keşif — 2026-09-19)
 
@@ -48,12 +65,12 @@ Android SDK (`%LOCALAPPDATA%\Android\Sdk`: platform 36.1/37.0, build-tools 36.0.
 
 ## Görevler (Bölüm 6)
 
-- [ ] 1. Keşif + PROGRESS/DECISIONS/BLOCKERS dosyaları  *(bu dosyalar yazıldı; git init + derleme altyapısı sürüyor)*
-- [ ] 2. Design tokens (renk, tipografi, boşluk) + light/dark
-- [ ] 3. DesignSystem bileşen kütüphanesi + Preview'lar
-- [ ] 4. Mevcut auth/doğrulama ekranlarını tokens'a taşı, mock'ları temizle, gerçek backend'e bağla
+- [x] 1. Keşif + PROGRESS/DECISIONS/BLOCKERS dosyaları (+ git init, gerçek derleme altyapısı)
+- [x] 2. Design tokens (renk, tipografi, boşluk) + light/dark  → `core/designsystem/{AppColors,AppTypography,Dimens,Theme}.kt`
+- [x] 3. DesignSystem bileşen kütüphanesi + Preview'lar  → `core/designsystem/component/*` (17 bileşen; Apple butonu Android'de yok, D5)
+- [x] 4. Auth/doğrulama ekranları tokens'a taşındı, mock'lar temizlendi, gerçek Supabase'e bağlandı (Welcome, Login, 6 adımlı Register, Pending, Rejected)
 - [ ] 5. Sunucu: claim ataması, atomik belge onayı, (sayaçlar: türetilmiş), hesap silme  *(Edge Function + SQL)*
-- [ ] 6. Navigasyon + accountStatus yönlendirmesi
+- [ ] 6. Navigasyon + accountStatus yönlendirmesi  *(durum→ekran yönlendirmesi + canlı izleme HAZIR; onaylı kullanıcı için sekmeli ana uygulama kaldı)*
 - [ ] 7. Topluluklar
 - [ ] 8. İhtiyaç Oluştur + analiz Function'ı (`parse-need`)
 - [ ] 9. Eşleşmeler + skor Function'ı

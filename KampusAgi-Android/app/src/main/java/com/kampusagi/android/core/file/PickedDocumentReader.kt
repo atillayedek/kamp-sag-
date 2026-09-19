@@ -3,10 +3,11 @@ package com.kampusagi.android.core.file
 import android.content.Context
 import android.net.Uri
 import android.provider.OpenableColumns
+import com.kampusagi.android.di.IoDispatcher
 import com.kampusagi.android.domain.common.AppError
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
 import java.io.IOException
@@ -27,8 +28,9 @@ class PickedDocument(val displayName: String?, val bytes: ByteArray)
 @Singleton
 class PickedDocumentReader @Inject constructor(
     @ApplicationContext private val context: Context,
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
 ) {
-    suspend fun describe(uri: Uri): PickedDocumentInfo = withContext(Dispatchers.IO) {
+    suspend fun describe(uri: Uri): PickedDocumentInfo = withContext(ioDispatcher) {
         try {
             context.contentResolver.query(uri, arrayOf(OpenableColumns.DISPLAY_NAME, OpenableColumns.SIZE), null, null, null)
                 ?.use { cursor ->
@@ -45,7 +47,7 @@ class PickedDocumentReader @Inject constructor(
         }
     }
 
-    suspend fun read(uri: Uri): PickedDocument = withContext(Dispatchers.IO) {
+    suspend fun read(uri: Uri): PickedDocument = withContext(ioDispatcher) {
         val info = describe(uri)
         if (info.sizeBytes != null && info.sizeBytes > MAX_DOCUMENT_BYTES) throw AppError.FileTooLarge(MAX_DOCUMENT_MEGABYTES)
         try {
