@@ -5,11 +5,11 @@
 
 ## Şu an üzerinde çalışılan görev
 
-**Görev 11: Profil / Ayarlar + tema tercihi — sonra 12 (Premium), 13 (Etkinlikler).** Geçici `ProfileTemporary` (`MainScreen.kt`) Görev 11 ile kaldırılacak.
+**Görev 13: Etkinlikler (REST `api.kampusagi.com`) — sonra 14 (RLS/rules testleri konsolidasyonu), 15 (erişilebilirlik/yerelleştirme/gizlilik), 16, 17, 18.**
 
 ## Son başarılı build/test
 
-- 2026-09-19 — `:app:testDebugUnitTest` ✓ (181 test), `:app:verifyRoborazziDebug` ✓ (35 ekran görüntüsü, light+dark yan yana, gözle doğrulandı), `:app:compileDebugKotlin` ✓; canlı DB testleri (`supabase/tests/001,002,003`) ✓.
+- 2026-09-20 — `:app:testDebugUnitTest` ✓ (250 test), `:app:verifyRoborazziDebug` ✓ (48 ekran görüntüsü, light+dark yan yana, gözle doğrulandı), `:app:compileDebugKotlin` ✓; `node --test supabase/functions/verify-purchase/logic.test.ts` ✓ (12); canlı DB testleri `supabase/tests/001,003(önceki),004,005,006` ✓ (002/003 Görev 14'te yeniden koşulacak).
 
 ## Komutlar (Windows)
 
@@ -50,7 +50,9 @@ Ayrıca makinede eski bir Firebase tabanlı KampüsAğı projesi (`Desktop\dosya
 | İhtiyaç Oluştur (AI analiz kartı) | Gerçek (Görev 8): `parse-need` + `publish-need`; yayından sonra `recompute-matches` tetiklenir |
 | Eşleşmeler (kart yığını, kaydırarak geç, Profili Gör, Mesaj At) + kullanıcı profili | Gerçek (Görev 9) |
 | Sohbet listesi + sohbet (gönderiliyor/gönderilemedi/iletildi, yazıyor, çevrimiçi, eski mesajlar, yeniden bağlanma) + okunmamış rozeti | Gerçek (Görev 10); Realtime parçaları canlıda elle doğrulanmalı (RELEASE_NOTES) |
-| Profil/Ayarlar, Premium, Etkinlikler | **Yok / geçici** (Görev 11–13) |
+| Profil/Ayarlar (Hesap Bilgileri, Bildirim Ayarları, Gizlilik ve Konum, Koyu Görünüm, Hesabı Sil, Çıkış) | Gerçek (Görev 11) |
+| Premium (Free / Premium / Community Pro) | Gerçek entegrasyon (Görev 12); ücretli planlar B5/B9 çözülene kadar görünmez |
+| Etkinlikler | **Yok** (Görev 13) |
 
 ### Backend (Supabase) durumu
 - Var: profiles, universities, student_verifications, communities, posts/comments/post_likes/saved_posts, requirements, matches, chat, notifications, campus_events, rate_limits, leaderboard/badges, reports; `student-documents` bucket; RLS her tabloda; `post_feed_view` (sayaçlar `count(*)` ile türetilir → trigger sayaç yok, D8).
@@ -75,8 +77,8 @@ Android SDK (`%LOCALAPPDATA%\Android\Sdk`: platform 36.1/37.0, build-tools 36.0.
 - [x] 8. İhtiyaç Oluştur + analiz Function'ı (`parse-need`) — MockEngine ile HTTP sözleşmesi testli
 - [x] 9. Eşleşmeler + skor Function'ı (`recompute-matches` normalize skor; "Anlamsal" yalnızca gerçek embedding skorunda)
 - [x] 10. Sohbet + presence (RPC ile sohbet başlatma, özel Realtime kanalı, okundu/yazıyor/çevrimiçi; bildirim: FCM yerine Realtime, BLOCKERS B1)
-- [ ] 11. Profil / Ayarlar + tema tercihi
-- [ ] 12. Premium + sunucu tarafı satın alma doğrulaması
+- [x] 11. Profil / Ayarlar + tema tercihi (DataStore), hesap silme, bildirim tercihi (+ okuma yetkisi açığı düzeltildi)
+- [x] 12. Premium + sunucu tarafı satın alma doğrulaması (`verify-purchase`; B5/B9/B10)
 - [ ] 13. Etkinlikler ekranını tasarıma uyarla
 - [ ] 14. Rules (RLS) + rules testleri
 - [ ] 15. Erişilebilirlik, yerelleştirme, gizlilik (Android karşılıkları)

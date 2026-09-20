@@ -1,19 +1,25 @@
 package com.kampusagi.android.di
 
+import com.kampusagi.android.data.account.SupabaseAccountRepository
 import com.kampusagi.android.data.auth.SupabaseAuthRepository
 import com.kampusagi.android.data.chat.SupabaseChatRepository
 import com.kampusagi.android.data.community.SupabasePostRepository
 import com.kampusagi.android.data.match.SupabaseMatchRepository
 import com.kampusagi.android.data.profile.SupabaseProfileRepository
 import com.kampusagi.android.data.requirement.SupabaseRequirementRepository
+import com.kampusagi.android.data.settings.DataStoreThemePreferenceRepository
+import com.kampusagi.android.data.settings.SupabaseNotificationPreferencesRepository
 import com.kampusagi.android.data.university.SupabaseUniversityRepository
 import com.kampusagi.android.data.verification.SupabaseStudentVerificationRepository
+import com.kampusagi.android.domain.account.AccountRepository
 import com.kampusagi.android.domain.auth.AuthRepository
 import com.kampusagi.android.domain.chat.ChatRepository
 import com.kampusagi.android.domain.community.PostRepository
 import com.kampusagi.android.domain.match.MatchRepository
 import com.kampusagi.android.domain.profile.ProfileRepository
 import com.kampusagi.android.domain.requirement.RequirementRepository
+import com.kampusagi.android.domain.settings.NotificationPreferencesRepository
+import com.kampusagi.android.domain.settings.ThemePreferenceRepository
 import com.kampusagi.android.domain.university.UniversityRepository
 import com.kampusagi.android.domain.verification.StudentVerificationRepository
 import dagger.Binds
@@ -57,4 +63,16 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindChatRepository(impl: SupabaseChatRepository): ChatRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindAccountRepository(impl: SupabaseAccountRepository): AccountRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindNotificationPreferencesRepository(impl: SupabaseNotificationPreferencesRepository): NotificationPreferencesRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindThemePreferenceRepository(impl: DataStoreThemePreferenceRepository): ThemePreferenceRepository
 }

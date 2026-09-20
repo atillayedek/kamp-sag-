@@ -1,11 +1,19 @@
 package com.kampusagi.android
 
+import android.graphics.Color
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.SystemBarStyle
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.getValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kampusagi.android.core.designsystem.KampusAgiTheme
+import com.kampusagi.android.feature.settings.AppThemeViewModel
 import com.kampusagi.android.navigation.KampusAgiNavHost
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -22,16 +30,35 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
+    private val appThemeViewModel: AppThemeViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
         setContent {
-            KampusAgiTheme {
-                Surface {
-                    KampusAgiNavHost()
+            val themeMode by appThemeViewModel.themeMode.collectAsStateWithLifecycle()
+            // Tercih okunana kadar (birkaç ms) çizim yapılmaz: yanlış temayla bir kare görünmesin.
+            themeMode?.let { mode ->
+                val darkTheme = mode.isDark(isSystemInDarkTheme())
+                // Sistem çubuğu ikon renkleri uygulama temasına uysun (sistem temasından bağımsız açık/koyu seçimi için şart).
+                DisposableEffect(darkTheme) {
+                    enableEdgeToEdge(
+                        statusBarStyle = SystemBarStyle.auto(Color.TRANSPARENT, Color.TRANSPARENT) { darkTheme },
+                        navigationBarStyle = SystemBarStyle.auto(LIGHT_SCRIM, DARK_SCRIM) { darkTheme },
+                    )
+                    onDispose { }
+                }
+                KampusAgiTheme(darkTheme = darkTheme) {
+                    Surface {
+                        KampusAgiNavHost()
+                    }
                 }
             }
         }
     }
 }
+
+/** Gezinme çubuğu scrim renkleri (androidx.activity varsayılanlarıyla aynı). */
+private val LIGHT_SCRIM = Color.argb(0xe6, 0xFF, 0xFF, 0xFF)
+private val DARK_SCRIM = Color.argb(0x80, 0x1b, 0x1b, 0x1b)

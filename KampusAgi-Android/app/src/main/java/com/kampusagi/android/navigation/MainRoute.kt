@@ -19,4 +19,9 @@ sealed interface MainRoute {
     @Serializable data class UserProfile(val userId: String) : MainRoute
 
     @Serializable data class Chat(val conversationId: String) : MainRoute
+
+    @Serializable data object AccountInfo : MainRoute
+    @Serializable data object NotificationSettings : MainRoute
+    @Serializable data object Privacy : MainRoute
+    @Serializable data object Premium : MainRoute
 }

@@ -104,6 +104,8 @@ dependencies {
 
     implementation(libs.datastore.preferences)
 
+    implementation(libs.billing.ktx)
+
     implementation(libs.coil.compose)
     implementation(libs.coil.network.ktor3)
 

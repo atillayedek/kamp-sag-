@@ -1,6 +1,5 @@
 package com.kampusagi.android.feature.main
 
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -28,9 +27,7 @@ import androidx.navigation.compose.rememberNavController
 import com.kampusagi.android.R
 import com.kampusagi.android.core.designsystem.appColors
 import com.kampusagi.android.core.designsystem.component.AppBottomBar
-import com.kampusagi.android.core.designsystem.component.AppTopBar
 import com.kampusagi.android.core.designsystem.component.BottomBarItem
-import com.kampusagi.android.core.designsystem.component.TextDangerButton
 import com.kampusagi.android.domain.community.CommunityScope
 import com.kampusagi.android.feature.chat.ChatScreen
 import com.kampusagi.android.feature.chat.ConversationsScreen
@@ -41,6 +38,11 @@ import com.kampusagi.android.feature.communities.PostDetailScreen
 import com.kampusagi.android.feature.matches.MatchesScreen
 import com.kampusagi.android.feature.matches.UserProfileScreen
 import com.kampusagi.android.feature.requirement.CreateRequirementScreen
+import com.kampusagi.android.feature.subscription.PremiumScreen
+import com.kampusagi.android.feature.settings.AccountInfoScreen
+import com.kampusagi.android.feature.settings.NotificationSettingsScreen
+import com.kampusagi.android.feature.settings.PrivacyScreen
+import com.kampusagi.android.feature.settings.ProfileScreen
 import com.kampusagi.android.navigation.MainRoute
 
 private enum class MainTab(val route: MainRoute, val labelRes: Int, val icon: ImageVector) {
@@ -131,20 +133,19 @@ fun MainScreen(onSignOut: () -> Unit, inboxViewModel: ConversationsViewModel = h
                 )
             }
             composable<MainRoute.Chat> { ChatScreen(onBack = { navController.popBackStack() }) }
-            composable<MainRoute.Profile> { ProfileTemporary(onSignOut) }
+            composable<MainRoute.Profile> {
+                ProfileScreen(
+                    onOpenAccountInfo = { navController.navigate(MainRoute.AccountInfo) },
+                    onOpenNotifications = { navController.navigate(MainRoute.NotificationSettings) },
+                    onOpenPrivacy = { navController.navigate(MainRoute.Privacy) },
+                    onOpenPremium = { navController.navigate(MainRoute.Premium) },
+                    onSignOut = onSignOut,
+                )
+            }
+            composable<MainRoute.AccountInfo> { AccountInfoScreen(onBack = { navController.popBackStack() }) }
+            composable<MainRoute.NotificationSettings> { NotificationSettingsScreen(onBack = { navController.popBackStack() }) }
+            composable<MainRoute.Privacy> { PrivacyScreen(onBack = { navController.popBackStack() }) }
+            composable<MainRoute.Premium> { PremiumScreen(onBack = { navController.popBackStack() }) }
         }
-    }
-}
-
-/** GEÇİCİ (Görev 11 Profil/Ayarlar ile değiştirilecek): oturumu kapatabilmek için. */
-@Composable
-private fun ProfileTemporary(onSignOut: () -> Unit) {
-    Column(modifier = Modifier.fillMaxSize()) {
-        AppTopBar(title = stringResource(R.string.tab_profile))
-        TextDangerButton(
-            text = stringResource(R.string.logout_button),
-            onClick = onSignOut,
-            modifier = Modifier.padding(20.dp),
-        )
     }
 }

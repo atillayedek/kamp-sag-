@@ -210,4 +210,56 @@
     <string name="chat_empty_title">Sohbete başla</string>
     <string name="chat_empty_message">İlk mesajı sen gönder.</string>
     <string name="chat_load_error">Sohbet yüklenemedi.</string>
+
+    <!-- Profil / Ayarlar -->
+    <string name="profile_title">Profil</string>
+    <string name="profile_verified">Onaylı ✓</string>
+    <string name="settings_account_info">Hesap Bilgileri</string>
+    <string name="settings_notifications">Bildirim Ayarları</string>
+    <string name="settings_privacy">Gizlilik ve Konum</string>
+    <string name="settings_dark_mode">Koyu Görünüm</string>
+    <string name="settings_use_system_theme">Sistem görünümünü kullan</string>
+    <string name="settings_premium">Premium\'a Yükselt</string>
+    <string name="settings_delete_account">Hesabı Sil</string>
+    <string name="settings_theme_save_failed">Görünüm tercihin kaydedilemedi.</string>
+    <string name="delete_account_title">Hesabını silmek istiyor musun?</string>
+    <string name="delete_account_message">Bu işlem geri alınamaz. Profilin, gönderilerin, mesajların, eşleşmelerin ve yüklediğin öğrenci belgesi kalıcı olarak silinir.</string>
+    <string name="delete_account_confirm">Hesabı Sil</string>
+    <string name="account_title">Hesap Bilgileri</string>
+    <string name="account_email_label">E-POSTA</string>
+    <string name="account_university_label">ÜNİVERSİTE</string>
+    <string name="account_university_locked">Üniversite bilgisi doğrulamadan sonra değiştirilemez.</string>
+    <string name="account_save">Kaydet</string>
+    <string name="account_saved">Bilgilerin güncellendi.</string>
+    <string name="account_username_taken">Bu kullanıcı adı zaten alınmış.</string>
+    <string name="notif_title">Bildirim Ayarları</string>
+    <string name="notif_new_message">Yeni mesajlar</string>
+    <string name="notif_footer">Yeni bir mesaj aldığında bildirim oluşturulur. Anlık (push) bildirimler bu sürümde etkin değil; yeni mesajları Sohbet sekmesindeki rozetten görürsün.</string>
+    <string name="privacy_title">Gizlilik ve Konum</string>
+    <string name="privacy_location_heading">KONUM</string>
+    <string name="privacy_location_body">KampüsAğı cihazının konumunu istemez ve saklamaz. Eşleşmeler; ihtiyaç kategorisine, etiketlere ve aynı bölümde olmana göre hesaplanır.</string>
+    <string name="privacy_data_heading">SAKLADIĞIMIZ VERİLER</string>
+    <string name="privacy_data_body">Ad soyad, kullanıcı adı, e-posta, üniversite ve bölüm bilgin; paylaştığın gönderiler, ihtiyaçlar ve mesajlar. Öğrenci belgen yalnızca doğrulama için saklanır ve yalnızca moderatör ekibi tarafından görülür.</string>
+    <string name="privacy_visibility_heading">KİMLER GÖREBİLİR</string>
+    <string name="privacy_visibility_body">Gönderilerini ve profilini yalnızca onaylı öğrenciler görebilir. Mesajlarını yalnızca sohbetteki kişiler okuyabilir.</string>
+    <string name="privacy_delete_heading">VERİLERİNİ SİLME</string>
+    <string name="privacy_delete_body">Profil sekmesindeki “Hesabı Sil” ile hesabını ve tüm verilerini kalıcı olarak silebilirsin.</string>
+
+    <!-- Premium -->
+    <string name="premium_title">Premium</string>
+    <string name="plan_current">Mevcut plan</string>
+    <string name="plan_popular">Popüler</string>
+    <string name="plan_upgrade_premium">Premium\'a Geç</string>
+    <string name="plan_upgrade_community_pro">Community Pro\'ya Geç</string>
+    <string name="plan_unavailable">Şu an satın alınamıyor.</string>
+    <string name="premium_more_soon">Ek planlar yakında burada olacak.</string>
+    <string name="premium_purchase_pending">Ödemen onaylandığında planın etkinleşecek.</string>
+    <string name="premium_purchase_success">Planın etkinleşti.</string>
+    <string name="premium_terms">Abonelik Google Play hesabından ücretlendirilir ve dönem sonunda otomatik yenilenir. İstediğin zaman Google Play\'den iptal edebilirsin.</string>
+    <string name="plan_period_day">gün</string>
+    <string name="plan_period_week">hafta</string>
+    <string name="plan_period_month">ay</string>
+    <string name="plan_period_year">yıl</string>
+    <string name="plan_price_per">%1$s / %2$s</string>
+    <string name="plan_price_multi">%1$s / %2$d %3$s</string>
 </resources>
