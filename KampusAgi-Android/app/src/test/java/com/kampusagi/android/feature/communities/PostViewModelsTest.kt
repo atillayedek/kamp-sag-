@@ -1,5 +1,7 @@
 package com.kampusagi.android.feature.communities
 
+import com.kampusagi.android.domain.analytics.AnalyticsEvent
+import com.kampusagi.android.testutil.FakeAnalyticsTracker
 import androidx.lifecycle.SavedStateHandle
 import com.kampusagi.android.R
 import com.kampusagi.android.core.time.RelativeTime
@@ -31,11 +33,12 @@ class PostViewModelsTest {
 
     private val posts = FakePostRepository()
     private val events = PostEvents()
+    private val analytics = FakeAnalyticsTracker()
 
     // --- CreatePostViewModel -------------------------------------------------------------------
 
     private fun createVm(scope: CommunityScope = CommunityScope.UNIVERSITY) =
-        CreatePostViewModel(SavedStateHandle(mapOf("scope" to scope.name)), posts, events)
+        CreatePostViewModel(SavedStateHandle(mapOf("scope" to scope.name)), posts, events, analytics)
 
     @Test
     fun `baslik govde ve kategori olmadan paylasilamaz`() {
@@ -77,6 +80,7 @@ class PostViewModelsTest {
         assertEquals(listOf<Any>(CommunityScope.UNIVERSITY, "Başlık", "Gövde", PostCategory.HOUSING), posts.created.single())
         assertEquals(1, changed)
         assertFalse(vm.uiState.value.isSubmitting)
+        assertEquals(listOf(AnalyticsEvent.POST_CREATED), analytics.events)
     }
 
     @Test
@@ -90,6 +94,7 @@ class PostViewModelsTest {
 
         assertEquals(uiText(R.string.error_forbidden), vm.uiState.value.message)
         assertFalse(vm.uiState.value.isSubmitting)
+        assertTrue("başarısız paylaşım olay üretmez", analytics.events.isEmpty())
     }
 
     // --- PostDetailViewModel -------------------------------------------------------------------

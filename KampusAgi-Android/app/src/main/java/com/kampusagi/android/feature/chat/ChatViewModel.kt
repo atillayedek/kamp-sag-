@@ -1,5 +1,7 @@
 package com.kampusagi.android.feature.chat
 
+import com.kampusagi.android.domain.analytics.AnalyticsEvent
+import com.kampusagi.android.domain.analytics.AnalyticsTracker
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -91,6 +93,7 @@ class ChatViewModel @Inject constructor(
     private val chatRepository: ChatRepository,
     authRepository: AuthRepository,
     private val clock: Clock,
+    private val analytics: AnalyticsTracker,
 ) : ViewModel() {
 
     private val conversationId: String = requireNotNull(savedStateHandle.get<String>("conversationId")) { "conversationId gerekli" }
@@ -196,6 +199,7 @@ class ChatViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val saved = chatRepository.sendMessage(conversationId, id, body)
+                analytics.track(AnalyticsEvent.MESSAGE_SENT)
                 mutate { state -> state.copy(pending = state.pending.filterNot { it.id == id }).withServerMessage(saved) }
             } catch (e: AppError) {
                 mutate { state -> state.copy(pending = state.pending.map { if (it.id == id) it.copy(failed = true) else it }) }

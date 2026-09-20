@@ -1,5 +1,7 @@
 package com.kampusagi.android.feature.chat
 
+import com.kampusagi.android.domain.analytics.AnalyticsEvent
+import com.kampusagi.android.testutil.FakeAnalyticsTracker
 import androidx.lifecycle.SavedStateHandle
 import com.kampusagi.android.core.ui.Loadable
 import com.kampusagi.android.domain.chat.ChatEvent
@@ -38,6 +40,7 @@ class ChatViewModelTest {
 
     private val repository = FakeChatRepository()
     private val clock = MutableClock()
+    private val analytics = FakeAnalyticsTracker()
     private val me = testUser.uid
 
     private fun viewModel() = ChatViewModel(
@@ -45,6 +48,7 @@ class ChatViewModelTest {
         chatRepository = repository,
         authRepository = FakeAuthRepository(testUser),
         clock = clock,
+        analytics = analytics,
     )
 
     private val older = testMessage("m1", "peer-1", "2026-09-19T11:00:00Z")
@@ -127,6 +131,7 @@ class ChatViewModelTest {
         assertEquals(pendingItem.id, item.id)
         assertEquals(DeliveryState.SENT, item.state)
         assertTrue(vm.uiState.value.pending.isEmpty())
+        assertEquals(listOf(AnalyticsEvent.MESSAGE_SENT), analytics.events)
     }
 
     @Test
@@ -157,6 +162,7 @@ class ChatViewModelTest {
         advanceUntilIdle()
         val failed = vm.uiState.value.items.single()
         assertEquals(DeliveryState.FAILED, failed.state)
+        assertTrue("başarısız gönderim olay üretmez", analytics.events.isEmpty())
 
         vm.retry(failed.id)
         advanceUntilIdle()
@@ -166,6 +172,7 @@ class ChatViewModelTest {
         val item = vm.uiState.value.items.single()
         assertEquals(DeliveryState.SENT, item.state)
         assertEquals(failed.id, item.id)
+        assertEquals("yeniden deneme başarılı olunca TEK olay", listOf(AnalyticsEvent.MESSAGE_SENT), analytics.events)
     }
 
     @Test

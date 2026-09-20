@@ -1,5 +1,7 @@
 package com.kampusagi.android.feature.auth.register
 
+import com.kampusagi.android.domain.analytics.AnalyticsEvent
+import com.kampusagi.android.domain.analytics.AnalyticsTracker
 import android.net.Uri
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -118,6 +120,7 @@ class RegisterViewModel @Inject constructor(
     private val verificationRepository: StudentVerificationRepository,
     private val documentReader: PickedDocumentReader,
     private val sessionRefresher: SessionRefresher,
+    private val analytics: AnalyticsTracker,
 ) : ViewModel() {
 
     private val startStep = RegisterStep.fromNumber(savedStateHandle.get<Int>("startStep") ?: 1)
@@ -236,6 +239,7 @@ class RegisterViewModel @Inject constructor(
                 universityId = university.id,
                 department = state.department,
             )
+            analytics.track(AnalyticsEvent.SIGN_UP_COMPLETED)
             goTo(RegisterStep.STUDENT_DOCUMENT)
         }
     }
@@ -267,6 +271,7 @@ class RegisterViewModel @Inject constructor(
         launchLoading(fallbackMessage = uiText(R.string.register_document_submit_error)) {
             val document = documentReader.read(uri)
             verificationRepository.submitDocument(document.bytes)
+            analytics.track(AnalyticsEvent.DOCUMENT_UPLOADED)
             // Başvuru alındı: kök yönlendirme durumu yeniden çözer ve "Başvurunuz İnceleniyor" ekranına geçer.
             sessionRefresher.requestRefresh()
         }

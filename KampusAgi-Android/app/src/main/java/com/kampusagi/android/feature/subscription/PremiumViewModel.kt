@@ -1,5 +1,7 @@
 package com.kampusagi.android.feature.subscription
 
+import com.kampusagi.android.domain.analytics.AnalyticsEvent
+import com.kampusagi.android.domain.analytics.AnalyticsTracker
 import android.app.Activity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -36,6 +38,7 @@ data class PremiumUiState(
 @HiltViewModel
 class PremiumViewModel @Inject constructor(
     private val repository: SubscriptionRepository,
+    private val analytics: AnalyticsTracker,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(PremiumUiState())
@@ -81,6 +84,7 @@ class PremiumViewModel @Inject constructor(
             try {
                 when (val result = repository.purchase(activity, plan)) {
                     is PurchaseResult.Success -> {
+                        analytics.track(AnalyticsEvent.PURCHASE_COMPLETED)
                         _uiState.update { state ->
                             val success = (state.overview as? Loadable.Success)?.value
                             state.copy(

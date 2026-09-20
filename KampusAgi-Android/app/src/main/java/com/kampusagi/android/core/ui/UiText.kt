@@ -45,6 +45,8 @@ fun AppError.toUiText(): UiText = when (this) {
     is AppError.FileUnreadable -> uiText(R.string.error_file_unreadable)
     is AppError.FileTooLarge -> uiText(R.string.error_file_too_large, maxMegabytes)
     is AppError.NotPdf -> uiText(R.string.error_file_not_pdf)
+    is AppError.ProductUnavailable -> uiText(R.string.error_product_unavailable)
+    is AppError.ProductAlreadyOwned -> uiText(R.string.error_product_already_owned)
     is AppError.Server -> UiText.Plain(userMessage)
     is AppError.Unknown -> uiText(R.string.error_unknown)
 }

@@ -1,5 +1,7 @@
 package com.kampusagi.android.feature.matches
 
+import com.kampusagi.android.domain.analytics.AnalyticsEvent
+import com.kampusagi.android.testutil.FakeAnalyticsTracker
 import com.kampusagi.android.core.ui.Loadable
 import com.kampusagi.android.domain.common.AppError
 import com.kampusagi.android.domain.match.MatchesResult
@@ -37,7 +39,9 @@ class MatchesViewModelTest {
     private val chat = FakeChatRepository()
     private val requirement = MyRequirement("req-1", "Basketbol")
 
-    private fun viewModel() = MatchesViewModel(matches, chat)
+    private val analytics = FakeAnalyticsTracker()
+
+    private fun viewModel() = MatchesViewModel(matches, chat, analytics)
 
     @Test
     fun `eslesmeler yuklenir`() = runTest {
@@ -143,6 +147,7 @@ class MatchesViewModelTest {
 
         assertEquals(listOf("user-a" to "req-1"), chat.started)
         assertEquals(listOf("conv-77"), opened)
+        assertEquals(listOf(AnalyticsEvent.CHAT_STARTED), analytics.events)
         assertFalse(vm.uiState.value.isStartingChat)
         job.cancel()
     }
@@ -182,6 +187,7 @@ class MatchesViewModelTest {
 
         assertNotNull(vm.uiState.value.message)
         assertTrue(opened.isEmpty())
+        assertTrue("başarısız sohbet başlatma olay üretmez", analytics.events.isEmpty())
         job.cancel()
     }
 }

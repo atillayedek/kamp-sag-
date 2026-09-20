@@ -21,6 +21,12 @@ sealed class AppError(message: String? = null, cause: Throwable? = null) : Excep
     class FileTooLarge(val maxMegabytes: Int) : AppError()
     class NotPdf : AppError()
 
+    /** Abonelik ürünü Play'de bulunamıyor / satın alınamıyor. */
+    class ProductUnavailable : AppError()
+
+    /** Abonelik Play hesabında zaten var (doğrulama sonraki açılışta tamamlanır). */
+    class ProductAlreadyOwned : AppError()
+
     /** Sunucunun döndürdüğü, kullanıcıya doğrudan gösterilebilen Türkçe mesaj (Edge Function `error` alanı). */
     class Server(val userMessage: String, cause: Throwable? = null) : AppError(userMessage, cause)
 

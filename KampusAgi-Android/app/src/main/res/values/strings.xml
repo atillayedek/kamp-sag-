@@ -28,6 +28,8 @@
     <string name="error_file_unreadable">Dosya okunamadı. Başka bir dosya seçin.</string>
     <string name="error_file_too_large">Dosya çok büyük. En fazla %1$d MB olabilir.</string>
     <string name="error_file_not_pdf">Yalnızca PDF dosyası yükleyebilirsiniz.</string>
+    <string name="error_product_unavailable">Bu plan şu an satın alınamıyor.</string>
+    <string name="error_product_already_owned">Bu plana zaten sahipsin. Planın birazdan etkinleşecek.</string>
     <string name="error_unknown">Beklenmeyen bir hata oluştu. Lütfen tekrar deneyin.</string>
 
     <!-- Welcome -->
@@ -239,9 +241,12 @@
     <string name="privacy_location_heading">KONUM</string>
     <string name="privacy_location_body">KampüsAğı cihazının konumunu istemez ve saklamaz. Eşleşmeler; ihtiyaç kategorisine, etiketlere ve aynı bölümde olmana göre hesaplanır.</string>
     <string name="privacy_data_heading">SAKLADIĞIMIZ VERİLER</string>
-    <string name="privacy_data_body">Ad soyad, kullanıcı adı, e-posta, üniversite ve bölüm bilgin; paylaştığın gönderiler, ihtiyaçlar ve mesajlar. Öğrenci belgen yalnızca doğrulama için saklanır ve yalnızca moderatör ekibi tarafından görülür.</string>
+    <string name="privacy_data_body">Ad soyad, kullanıcı adı, e-posta, üniversite ve bölüm bilgin; paylaştığın gönderiler, ihtiyaçlar ve mesajlar; kullanım istatistikleri (yalnızca olay adı). Öğrenci belgen yalnızca doğrulama için saklanır ve yalnızca moderatör ekibi tarafından görülür.</string>
     <string name="privacy_visibility_heading">KİMLER GÖREBİLİR</string>
     <string name="privacy_visibility_body">Gönderilerini ve profilini yalnızca onaylı öğrenciler görebilir. Mesajlarını yalnızca sohbetteki kişiler okuyabilir.</string>
+    <string name="privacy_analytics_title">Kullanım istatistiklerini paylaş</string>
+    <string name="privacy_analytics_body">Uygulamayı nasıl kullandığını (ör. gönderi paylaşıldı, mesaj gönderildi) yalnızca olayın adıyla sayarız; içerik, konum ve cihaz bilgisi gönderilmez. İstediğin zaman kapatabilirsin; kapatınca hiçbir şey gönderilmez.</string>
+    <string name="settings_preference_save_failed">Tercihin kaydedilemedi.</string>
     <string name="privacy_delete_heading">VERİLERİNİ SİLME</string>
     <string name="privacy_delete_body">Profil sekmesindeki “Hesabı Sil” ile hesabını ve tüm verilerini kalıcı olarak silebilirsin.</string>
 

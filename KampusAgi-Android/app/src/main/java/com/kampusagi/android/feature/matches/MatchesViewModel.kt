@@ -1,5 +1,7 @@
 package com.kampusagi.android.feature.matches
 
+import com.kampusagi.android.domain.analytics.AnalyticsEvent
+import com.kampusagi.android.domain.analytics.AnalyticsTracker
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kampusagi.android.core.ui.Loadable
@@ -37,6 +39,7 @@ data class MatchesUiState(
 class MatchesViewModel @Inject constructor(
     private val matchRepository: MatchRepository,
     private val chatRepository: ChatRepository,
+    private val analytics: AnalyticsTracker,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(MatchesUiState())
@@ -91,7 +94,9 @@ class MatchesViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.update { it.copy(isStartingChat = true) }
             try {
-                _openChat.send(chatRepository.startConversation(match.userId, requirementId))
+                val conversationId = chatRepository.startConversation(match.userId, requirementId)
+                analytics.track(AnalyticsEvent.CHAT_STARTED)
+                _openChat.send(conversationId)
             } catch (e: AppError) {
                 _uiState.update { it.copy(message = e.toUiText()) }
             } finally {

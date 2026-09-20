@@ -1,5 +1,7 @@
 package com.kampusagi.android.feature.matches
 
+import com.kampusagi.android.domain.analytics.AnalyticsEvent
+import com.kampusagi.android.testutil.FakeAnalyticsTracker
 import androidx.lifecycle.SavedStateHandle
 import com.kampusagi.android.core.ui.Loadable
 import com.kampusagi.android.domain.common.AppError
@@ -32,7 +34,9 @@ class UserProfileViewModelTest {
     private val matches = FakeMatchRepository()
     private val chat = FakeChatRepository()
 
-    private fun viewModel() = UserProfileViewModel(SavedStateHandle(mapOf("userId" to "user-9")), matches, chat)
+    private val analytics = FakeAnalyticsTracker()
+
+    private fun viewModel() = UserProfileViewModel(SavedStateHandle(mapOf("userId" to "user-9")), matches, chat, analytics)
 
     @Test
     fun `profil rota argumanindaki kullanici icin yuklenir`() = runTest {
@@ -74,6 +78,7 @@ class UserProfileViewModelTest {
 
         assertEquals(listOf("user-9" to null), chat.started)
         assertEquals(listOf("conv-5"), opened)
+        assertEquals(listOf(AnalyticsEvent.CHAT_STARTED), analytics.events)
         job.cancel()
     }
 

@@ -55,8 +55,8 @@ class PlayBillingGateway @Inject constructor(
 
     override suspend fun launchPurchase(activity: Activity, productId: String, accountId: String): StorePurchaseResult {
         val details = detailsByProduct[productId] ?: queryDetails(listOf(productId)).firstOrNull()
-            ?: throw AppError.Server("Bu plan şu an satın alınamıyor.")
-        val offer = details.recurringOffer() ?: throw AppError.Server("Bu plan şu an satın alınamıyor.")
+            ?: throw AppError.ProductUnavailable()
+        val offer = details.recurringOffer() ?: throw AppError.ProductUnavailable()
 
         ensureConnected()
         val flow = CompletableDeferred<StorePurchaseResult>()
@@ -175,7 +175,7 @@ private fun BillingResult.toError(): AppError = when (responseCode) {
     BillingClient.BillingResponseCode.NETWORK_ERROR,
     BillingClient.BillingResponseCode.BILLING_UNAVAILABLE,
     -> AppError.Network()
-    BillingClient.BillingResponseCode.ITEM_UNAVAILABLE -> AppError.Server("Bu plan şu an satın alınamıyor.")
-    BillingClient.BillingResponseCode.ITEM_ALREADY_OWNED -> AppError.Server("Bu plana zaten sahipsin. Planın birazdan etkinleşecek.")
+    BillingClient.BillingResponseCode.ITEM_UNAVAILABLE -> AppError.ProductUnavailable()
+    BillingClient.BillingResponseCode.ITEM_ALREADY_OWNED -> AppError.ProductAlreadyOwned()
     else -> AppError.Unknown()
 }

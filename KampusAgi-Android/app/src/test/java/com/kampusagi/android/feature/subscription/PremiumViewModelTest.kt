@@ -1,5 +1,7 @@
 package com.kampusagi.android.feature.subscription
 
+import com.kampusagi.android.domain.analytics.AnalyticsEvent
+import com.kampusagi.android.testutil.FakeAnalyticsTracker
 import android.app.Activity
 import com.kampusagi.android.core.ui.Loadable
 import com.kampusagi.android.domain.common.AppError
@@ -35,13 +37,14 @@ class PremiumViewModelTest {
     val mainDispatcherRule = MainDispatcherRule(testDispatcher)
 
     private val repository = FakeSubscriptionRepository()
+    private val analytics = FakeAnalyticsTracker()
     private val activity = mockk<Activity>(relaxed = true)
 
     private fun overview(vm: PremiumViewModel) = (vm.uiState.value.overview as Loadable.Success).value
 
     @Test
     fun `planlar ve mevcut plan yuklenir acilista satin almalar dogrulatilir`() = runTest {
-        val vm = PremiumViewModel(repository)
+        val vm = PremiumViewModel(repository, analytics)
         advanceUntilIdle()
 
         assertEquals(listOf(PlanTier.FREE, PlanTier.PREMIUM), overview(vm).plans.map { it.tier })
@@ -53,7 +56,7 @@ class PremiumViewModelTest {
     @Test
     fun `yalnizca ucretsiz plan yayindaysa ucretli plan yok sayilir`() = runTest {
         repository.overviewBlock = { PlansOverview(listOf(freePlan()), PlanTier.FREE) }
-        val vm = PremiumViewModel(repository)
+        val vm = PremiumViewModel(repository, analytics)
         advanceUntilIdle()
         assertFalse(vm.uiState.value.hasPaidPlans)
     }
@@ -61,7 +64,7 @@ class PremiumViewModelTest {
     @Test
     fun `yukleme hatasi Failure olur ve tekrar dene calisir`() = runTest {
         repository.overviewBlock = { throw AppError.Network() }
-        val vm = PremiumViewModel(repository)
+        val vm = PremiumViewModel(repository, analytics)
         advanceUntilIdle()
         assertTrue(vm.uiState.value.overview is Loadable.Failure)
         assertEquals(0, repository.restoreCalls)
@@ -75,7 +78,7 @@ class PremiumViewModelTest {
     @Test
     fun `Play hesabinda mevcut abonelik varsa gecerli plan guncellenir`() = runTest {
         repository.restoreBlock = { PlanTier.PREMIUM }
-        val vm = PremiumViewModel(repository)
+        val vm = PremiumViewModel(repository, analytics)
         advanceUntilIdle()
         assertEquals(PlanTier.PREMIUM, overview(vm).currentTier)
     }
@@ -83,7 +86,7 @@ class PremiumViewModelTest {
     @Test
     fun `dogrulama hatasi mesaj olur ama plan listesi ekranda kalir`() = runTest {
         repository.restoreBlock = { throw AppError.Server("Satın alma doğrulanamadı.") }
-        val vm = PremiumViewModel(repository)
+        val vm = PremiumViewModel(repository, analytics)
         advanceUntilIdle()
 
         assertTrue(vm.uiState.value.overview is Loadable.Success)
@@ -94,7 +97,7 @@ class PremiumViewModelTest {
 
     @Test
     fun `basarili satin alma plani gunceller ve basari mesaji gosterir`() = runTest {
-        val vm = PremiumViewModel(repository)
+        val vm = PremiumViewModel(repository, analytics)
         advanceUntilIdle()
 
         vm.purchase(activity, premiumPlan())
@@ -104,13 +107,14 @@ class PremiumViewModelTest {
         assertEquals(PlanTier.PREMIUM, overview(vm).currentTier)
         assertNotNull(vm.uiState.value.message)
         assertNull(vm.uiState.value.purchasingTier)
+        assertEquals(listOf(AnalyticsEvent.PURCHASE_COMPLETED), analytics.events)
     }
 
     @Test
     fun `satin alma surerken ikinci dokunus yok sayilir ve kart yukleniyor gosterir`() = runTest {
         val gate = CompletableDeferred<PurchaseResult>()
         repository.purchaseBlock = { gate.await() }
-        val vm = PremiumViewModel(repository)
+        val vm = PremiumViewModel(repository, analytics)
         advanceUntilIdle()
 
         vm.purchase(activity, premiumPlan())
@@ -129,7 +133,7 @@ class PremiumViewModelTest {
     @Test
     fun `iptal edilen satin alma mesaj uretmez ve plani degistirmez`() = runTest {
         repository.purchaseBlock = { PurchaseResult.Canceled }
-        val vm = PremiumViewModel(repository)
+        val vm = PremiumViewModel(repository, analytics)
         advanceUntilIdle()
 
         vm.purchase(activity, premiumPlan())
@@ -137,12 +141,13 @@ class PremiumViewModelTest {
 
         assertNull(vm.uiState.value.message)
         assertEquals(PlanTier.FREE, overview(vm).currentTier)
+        assertTrue("iptal olay üretmez", analytics.events.isEmpty())
     }
 
     @Test
     fun `bekleyen odeme bilgi mesaji verir ve plani degistirmez`() = runTest {
         repository.purchaseBlock = { PurchaseResult.Pending }
-        val vm = PremiumViewModel(repository)
+        val vm = PremiumViewModel(repository, analytics)
         advanceUntilIdle()
 
         vm.purchase(activity, premiumPlan())
@@ -150,12 +155,13 @@ class PremiumViewModelTest {
 
         assertNotNull(vm.uiState.value.message)
         assertEquals(PlanTier.FREE, overview(vm).currentTier)
+        assertTrue("bekleyen ödeme henüz tamamlanmış satın alma değildir", analytics.events.isEmpty())
     }
 
     @Test
     fun `satin alma hatasi mesaj gosterir ve plani degistirmez`() = runTest {
         repository.purchaseBlock = { throw AppError.Server("Bu satın alma başka bir hesaba tanımlı.") }
-        val vm = PremiumViewModel(repository)
+        val vm = PremiumViewModel(repository, analytics)
         advanceUntilIdle()
 
         vm.purchase(activity, premiumPlan())
@@ -168,7 +174,7 @@ class PremiumViewModelTest {
 
     @Test
     fun `Play fiyati olmayan plan satin alinamaz`() = runTest {
-        val vm = PremiumViewModel(repository)
+        val vm = PremiumViewModel(repository, analytics)
         advanceUntilIdle()
 
         vm.purchase(activity, proPlan(price = null))

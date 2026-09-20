@@ -5,4 +5,6 @@
          yalnızca Compose renkleri için geçerlidir, bu XML kaynağı Android'in
          adaptive icon sisteminin zorunlu kıldığı bir istisnadır). -->
     <color name="ic_launcher_background">#4F46E5</color>
+    <!-- Pencere zemini (themes.xml); AppColors.appBg ile aynı değer. values-night açık/koyu farkını taşır. -->
+    <color name="window_background">#FFFFFF</color>
 </resources>

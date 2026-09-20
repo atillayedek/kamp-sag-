@@ -1,5 +1,7 @@
 package com.kampusagi.android.feature.requirement
 
+import com.kampusagi.android.domain.analytics.AnalyticsEvent
+import com.kampusagi.android.testutil.FakeAnalyticsTracker
 import com.kampusagi.android.core.ui.UiText
 import com.kampusagi.android.domain.common.AppError
 import com.kampusagi.android.domain.community.PostCategory
@@ -58,7 +60,9 @@ class CreateRequirementViewModelTest {
     }
 
     private val repository = FakeRequirementRepository()
-    private fun viewModel() = CreateRequirementViewModel(repository)
+    private val analytics = FakeAnalyticsTracker()
+
+    private fun viewModel() = CreateRequirementViewModel(repository, analytics)
 
     private fun TestScope.debounced() = advanceTimeBy(CreateRequirementViewModel.DEBOUNCE_MS + 1)
 
@@ -172,6 +176,7 @@ class CreateRequirementViewModelTest {
         assertEquals("", vm.uiState.value.text)
         assertEquals(AnalysisState.Idle, vm.uiState.value.analysis)
         assertFalse(vm.uiState.value.isPublishing)
+        assertEquals(listOf(AnalyticsEvent.REQUIREMENT_PUBLISHED), analytics.events)
     }
 
     @Test

@@ -59,6 +59,7 @@ class ChatMatchesSnapshotTest {
     private fun snap(name: String, content: @Composable () -> Unit) {
         composeRule.setContent { SideBySide(content = content) }
         composeRule.onRoot().captureRoboImage("$SNAPSHOT_DIR/$name.png")
+        composeRule.assertAccessibleInteractions()
     }
 
     private val candidates = listOf(

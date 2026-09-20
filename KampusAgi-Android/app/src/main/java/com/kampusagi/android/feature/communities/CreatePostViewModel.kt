@@ -1,5 +1,7 @@
 package com.kampusagi.android.feature.communities
 
+import com.kampusagi.android.domain.analytics.AnalyticsEvent
+import com.kampusagi.android.domain.analytics.AnalyticsTracker
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -44,6 +46,7 @@ class CreatePostViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val postRepository: PostRepository,
     private val postEvents: PostEvents,
+    private val analytics: AnalyticsTracker,
 ) : ViewModel() {
 
     private val scope = CommunityScope.valueOf(savedStateHandle.get<String>("scope") ?: CommunityScope.GENERAL.name)
@@ -69,6 +72,7 @@ class CreatePostViewModel @Inject constructor(
             _uiState.update { it.copy(isSubmitting = true) }
             try {
                 postRepository.createPost(scope, state.title, state.body, category)
+                analytics.track(AnalyticsEvent.POST_CREATED)
                 postEvents.notifyChanged()
                 _created.send(Unit)
             } catch (e: AppError) {

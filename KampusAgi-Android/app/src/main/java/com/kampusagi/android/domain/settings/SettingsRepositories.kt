@@ -35,3 +35,13 @@ interface NotificationPreferencesRepository {
 
     suspend fun setNewMessageEnabled(enabled: Boolean)
 }
+
+/**
+ * Cihazda saklanan gizlilik tercihi: kullanım istatistikleri (yalnızca olay adı, bkz. AnalyticsEvent) paylaşılsın mı?
+ * Varsayılan AÇIK; kullanıcı Profil > Gizlilik ve Konum'dan kapatabilir (docs/DECISIONS.md D36).
+ */
+interface PrivacyPreferenceRepository {
+    val analyticsEnabled: Flow<Boolean>
+
+    suspend fun setAnalyticsEnabled(enabled: Boolean)
+}

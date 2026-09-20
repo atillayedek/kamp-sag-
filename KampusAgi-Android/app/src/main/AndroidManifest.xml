@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <!-- Çalışma zamanı izni İSTENMEZ: belge seçimi sistem belge seçicisiyle (SAF), konum/kamera/kişiler/depolama kullanılmaz.
+         Play Billing kütüphanesi kendi BILLING iznini manifest birleştirmesiyle ekler. -->
     <!-- POST_NOTIFICATIONS bilerek YOK: FCM kullanıcı tarafından iptal edildi
          (2026-09-16) — bkz. memory-bank/Memory_Bank.md §11, AI_Guidelines.md §45.7
          (çelişki ÇÖZÜLDÜ: Firebase yasağı korunuyor, push bildirim altyapısı
@@ -9,16 +11,16 @@
 
     <application
         android:name=".KampusAgiApplication"
-        android:allowBackup="true"
+        android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@android:style/Theme.Material.Light.NoActionBar">
+        android:theme="@style/Theme.KampusAgi">
 
         <activity
             android:name=".MainActivity"
             android:exported="true"
-            android:theme="@android:style/Theme.Material.Light.NoActionBar">
+            android:theme="@style/Theme.KampusAgi">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

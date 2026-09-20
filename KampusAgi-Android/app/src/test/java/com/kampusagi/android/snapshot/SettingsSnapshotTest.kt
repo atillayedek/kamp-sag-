@@ -15,7 +15,8 @@ import com.kampusagi.android.feature.settings.AccountInfoContent
 import com.kampusagi.android.feature.settings.AccountInfoUiState
 import com.kampusagi.android.feature.settings.NotificationSettingsContent
 import com.kampusagi.android.feature.settings.NotificationSettingsUiState
-import com.kampusagi.android.feature.settings.PrivacyScreen
+import com.kampusagi.android.feature.settings.PrivacyContent
+import com.kampusagi.android.feature.settings.PrivacyUiState
 import com.kampusagi.android.feature.settings.ProfileContent
 import com.kampusagi.android.feature.settings.ProfileUiState
 import org.junit.Rule
@@ -37,6 +38,7 @@ class SettingsSnapshotTest {
     private fun snap(name: String, content: @Composable () -> Unit) {
         composeRule.setContent { SideBySide(content = content) }
         composeRule.onRoot().captureRoboImage("$SNAPSHOT_DIR/$name.png")
+        composeRule.assertAccessibleInteractions()
     }
 
     @Composable
@@ -95,5 +97,7 @@ class SettingsSnapshotTest {
     }
 
     @Test
-    fun privacy() = snap("settings_privacy") { PrivacyScreen(onBack = {}) }
+    fun privacy() = snap("settings_privacy") {
+        PrivacyContent(PrivacyUiState(analyticsEnabled = true), remember { SnackbarHostState() }, onBack = {}, onAnalyticsChange = {})
+    }
 }

@@ -68,7 +68,7 @@ class SupabaseSubscriptionRepository @Inject constructor(
     }
 
     override suspend fun purchase(activity: Activity, plan: SubscriptionPlan): PurchaseResult = mapErrors(preferServerMessage = true) {
-        val productId = plan.productId ?: throw AppError.Server("Bu plan satın alınamaz.")
+        val productId = plan.productId ?: throw AppError.ProductUnavailable()
         val accountId = client.auth.currentUserOrNull()?.id ?: throw AppError.Unauthorized()
         when (val result = billing.launchPurchase(activity, productId, accountId)) {
             is StorePurchaseResult.Purchased -> PurchaseResult.Success(verify(result.productId, result.purchaseToken))

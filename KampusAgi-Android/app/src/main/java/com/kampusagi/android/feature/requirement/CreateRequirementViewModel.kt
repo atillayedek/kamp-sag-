@@ -1,5 +1,7 @@
 package com.kampusagi.android.feature.requirement
 
+import com.kampusagi.android.domain.analytics.AnalyticsEvent
+import com.kampusagi.android.domain.analytics.AnalyticsTracker
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kampusagi.android.core.ui.UiText
@@ -46,6 +48,7 @@ data class CreateRequirementUiState(
 @HiltViewModel
 class CreateRequirementViewModel @Inject constructor(
     private val requirementRepository: RequirementRepository,
+    private val analytics: AnalyticsTracker,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(CreateRequirementUiState())
@@ -90,6 +93,7 @@ class CreateRequirementViewModel @Inject constructor(
             _uiState.update { it.copy(isPublishing = true) }
             try {
                 requirementRepository.publish(ready.forText, ready.analysis.need)
+                analytics.track(AnalyticsEvent.REQUIREMENT_PUBLISHED)
                 analysisJob?.cancel()
                 _uiState.update { CreateRequirementUiState() }
                 _published.send(Unit)

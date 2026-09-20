@@ -1,5 +1,7 @@
 package com.kampusagi.android.feature.matches
 
+import com.kampusagi.android.domain.analytics.AnalyticsEvent
+import com.kampusagi.android.domain.analytics.AnalyticsTracker
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -32,6 +34,7 @@ class UserProfileViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val matchRepository: MatchRepository,
     private val chatRepository: ChatRepository,
+    private val analytics: AnalyticsTracker,
 ) : ViewModel() {
 
     private val userId: String = requireNotNull(savedStateHandle.get<String>("userId")) { "userId gerekli" }
@@ -63,7 +66,9 @@ class UserProfileViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.update { it.copy(isStartingChat = true) }
             try {
-                _openChat.send(chatRepository.startConversation(userId, requirementId = null))
+                val conversationId = chatRepository.startConversation(userId, requirementId = null)
+                analytics.track(AnalyticsEvent.CHAT_STARTED)
+                _openChat.send(conversationId)
             } catch (e: AppError) {
                 _uiState.update { it.copy(message = e.toUiText()) }
             } finally {

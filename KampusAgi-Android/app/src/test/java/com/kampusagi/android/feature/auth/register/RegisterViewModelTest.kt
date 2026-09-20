@@ -1,5 +1,7 @@
 package com.kampusagi.android.feature.auth.register
 
+import com.kampusagi.android.domain.analytics.AnalyticsEvent
+import com.kampusagi.android.testutil.FakeAnalyticsTracker
 import android.content.Context
 import android.net.Uri
 import androidx.lifecycle.SavedStateHandle
@@ -51,6 +53,7 @@ class RegisterViewModelTest {
     private val universities = FakeUniversityRepository()
     private val verification = FakeVerificationRepository()
     private val refresher = SessionRefresher()
+    private val analytics = FakeAnalyticsTracker()
 
     private fun viewModel(startStep: Int = 1) = RegisterViewModel(
         savedStateHandle = SavedStateHandle(mapOf("startStep" to startStep)),
@@ -60,6 +63,7 @@ class RegisterViewModelTest {
         verificationRepository = verification,
         documentReader = PickedDocumentReader(context, UnconfinedTestDispatcher()),
         sessionRefresher = refresher,
+        analytics = analytics,
     )
 
     private fun RegisterViewModel.fillPersonalStep() {
@@ -185,6 +189,7 @@ class RegisterViewModelTest {
         vm.onContinue()
         assertEquals(RegisterStep.STUDENT_DOCUMENT, vm.uiState.value.step)
         assertEquals(listOf(listOf("  Test Öğrenci ", "test_ogrenci", "uni-1", " Bilgisayar Mühendisliği ")), profiles.updates)
+        assertEquals(listOf(AnalyticsEvent.SIGN_UP_COMPLETED), analytics.events)
     }
 
     @Test
@@ -281,6 +286,7 @@ class RegisterViewModelTest {
         assertEquals(1, verification.submitted.size)
         assertEquals("%PDF-1.4 test", String(verification.submitted.single()))
         assertEquals(1, refreshRequested.size)
+        assertEquals(listOf(AnalyticsEvent.DOCUMENT_UPLOADED), analytics.events)
     }
 
     @Test
