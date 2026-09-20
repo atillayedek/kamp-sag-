@@ -5,11 +5,11 @@
 
 ## Şu an üzerinde çalışılan görev
 
-**Görev 14: Rules (RLS) testlerinin konsolidasyonu — sonra 15 (erişilebilirlik/yerelleştirme/gizlilik), 16, 17, 18.**
+**Görev 15: Erişilebilirlik, yerelleştirme, gizlilik (Android karşılıkları) — sonra 16 (test genişletme), 17 (son tarama), 18 (Release + RELEASE_NOTES).**
 
 ## Son başarılı build/test
 
-- 2026-09-20 — `:app:testDebugUnitTest` ✓ (275 test), `:app:verifyRoborazziDebug` ✓ (50 ekran görüntüsü, light+dark yan yana, gözle doğrulandı), `:app:compileDebugKotlin` ✓; `node --test supabase/functions/verify-purchase/logic.test.ts` ✓ (12); canlı DB testleri `supabase/tests/001,004,005,006,007` ✓ (002/003 Görev 14'te yeniden koşulacak).
+- 2026-09-20 — `:app:testDebugUnitTest` ✓ (275 test), `:app:verifyRoborazziDebug` ✓ (50 ekran görüntüsü, light+dark yan yana, gözle doğrulandı), `:app:compileDebugKotlin` ✓; `node --test supabase/functions/verify-purchase/logic.test.ts` ✓ (12); canlı DB testleri `supabase/tests/001–008` ✓ (hepsi yeniden koşuldu).
 
 ## Komutlar (Windows)
 
@@ -80,7 +80,7 @@ Android SDK (`%LOCALAPPDATA%\Android\Sdk`: platform 36.1/37.0, build-tools 36.0.
 - [x] 11. Profil / Ayarlar + tema tercihi (DataStore), hesap silme, bildirim tercihi (+ okuma yetkisi açığı düzeltildi)
 - [x] 12. Premium + sunucu tarafı satın alma doğrulaması (`verify-purchase`; B5/B9/B10)
 - [x] 13. Etkinlikler ekranı (Supabase kaynaklı — REST API park edilmiş alan adı, B6/D34)
-- [ ] 14. Rules (RLS) + rules testleri
+- [x] 14. Rules (RLS) + rules testleri (001–008 canlıda yeşil, denetimde 3 açık kapatıldı — D35; `supabase/tests/README.md`)
 - [ ] 15. Erişilebilirlik, yerelleştirme, gizlilik (Android karşılıkları)
 - [ ] 16. Unit + UI + snapshot testleri
 - [ ] 17. Son tarama: mock/placeholder/TODO/FIXME/hardcoded örnek veri yok
