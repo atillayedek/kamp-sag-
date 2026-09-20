@@ -11,8 +11,11 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Event
 import androidx.compose.material.icons.outlined.Forum
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -51,6 +54,7 @@ import java.time.Instant
 fun CommunitiesScreen(
     onCreatePost: (CommunityScope) -> Unit,
     onOpenPost: (String) -> Unit,
+    onOpenEvents: () -> Unit,
     viewModel: CommunitiesViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -74,6 +78,7 @@ fun CommunitiesScreen(
         onLikeClick = viewModel::toggleLike,
         onPostClick = { onOpenPost(it.id) },
         onCreatePost = { onCreatePost(uiState.scope) },
+        onOpenEvents = onOpenEvents,
     )
 }
 
@@ -89,6 +94,7 @@ internal fun CommunitiesContent(
     onLikeClick: (Post) -> Unit,
     onPostClick: (Post) -> Unit,
     onCreatePost: () -> Unit,
+    onOpenEvents: () -> Unit,
     now: Instant = Instant.now(),
 ) {
     val colors = MaterialTheme.appColors
@@ -103,7 +109,18 @@ internal fun CommunitiesContent(
 
     Box(modifier = Modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxSize()) {
-            AppTopBar(title = stringResource(R.string.communities_title))
+            AppTopBar(
+                title = stringResource(R.string.communities_title),
+                actions = {
+                    IconButton(onClick = onOpenEvents) {
+                        Icon(
+                            imageVector = Icons.Outlined.Event,
+                            contentDescription = stringResource(R.string.events_open_cd),
+                            tint = MaterialTheme.appColors.label,
+                        )
+                    }
+                },
+            )
             SegmentedPicker(
                 options = listOf(stringResource(R.string.communities_scope_general), stringResource(R.string.communities_scope_university)),
                 selectedIndex = if (state.scope == CommunityScope.GENERAL) 0 else 1,
@@ -183,7 +200,7 @@ private fun CommunitiesPreview() {
             state = CommunitiesUiState(feeds = mapOf(CommunityScope.GENERAL to FeedState(isLoading = false))),
             snackbarHostState = remember { SnackbarHostState() },
             onScopeSelected = {}, onRefresh = {}, onRetry = {}, onLoadMore = {},
-            onLikeClick = {}, onPostClick = {}, onCreatePost = {},
+            onLikeClick = {}, onPostClick = {}, onCreatePost = {}, onOpenEvents = {},
         )
     }
 }

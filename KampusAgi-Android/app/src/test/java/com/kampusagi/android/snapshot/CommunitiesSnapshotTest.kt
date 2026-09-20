@@ -70,7 +70,7 @@ class CommunitiesSnapshotTest {
     private fun communities(state: CommunitiesUiState) = CommunitiesContent(
         state = state, snackbarHostState = remember { SnackbarHostState() },
         onScopeSelected = {}, onRefresh = {}, onRetry = {}, onLoadMore = {},
-        onLikeClick = {}, onPostClick = {}, onCreatePost = {}, now = now,
+        onLikeClick = {}, onPostClick = {}, onCreatePost = {}, onOpenEvents = {}, now = now,
     )
 
     @Test

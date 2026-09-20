@@ -24,4 +24,5 @@ sealed interface MainRoute {
     @Serializable data object NotificationSettings : MainRoute
     @Serializable data object Privacy : MainRoute
     @Serializable data object Premium : MainRoute
+    @Serializable data object Events : MainRoute
 }

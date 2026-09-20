@@ -262,4 +262,13 @@
     <string name="plan_period_year">yıl</string>
     <string name="plan_price_per">%1$s / %2$s</string>
     <string name="plan_price_multi">%1$s / %2$d %3$s</string>
+
+    <!-- Etkinlikler -->
+    <string name="events_title">Etkinlikler</string>
+    <string name="events_open_cd">Etkinlikler</string>
+    <string name="events_empty_title">Yaklaşan etkinlik yok</string>
+    <string name="events_empty_message">Yeni etkinlikler eklendiğinde burada görünür.</string>
+    <string name="events_join">Katıl</string>
+    <string name="events_joined">Katılıyorsun ✓</string>
+    <string name="events_attendees_format">%1$d kişi katılıyor</string>
 </resources>

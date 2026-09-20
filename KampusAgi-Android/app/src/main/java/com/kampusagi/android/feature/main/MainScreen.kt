@@ -37,6 +37,7 @@ import com.kampusagi.android.feature.communities.CreatePostScreen
 import com.kampusagi.android.feature.communities.PostDetailScreen
 import com.kampusagi.android.feature.matches.MatchesScreen
 import com.kampusagi.android.feature.matches.UserProfileScreen
+import com.kampusagi.android.feature.events.EventsScreen
 import com.kampusagi.android.feature.requirement.CreateRequirementScreen
 import com.kampusagi.android.feature.subscription.PremiumScreen
 import com.kampusagi.android.feature.settings.AccountInfoScreen
@@ -104,6 +105,7 @@ fun MainScreen(onSignOut: () -> Unit, inboxViewModel: ConversationsViewModel = h
                 CommunitiesScreen(
                     onCreatePost = { scope: CommunityScope -> navController.navigate(MainRoute.CreatePost(scope.name)) },
                     onOpenPost = { postId -> navController.navigate(MainRoute.PostDetail(postId)) },
+                    onOpenEvents = { navController.navigate(MainRoute.Events) },
                 )
             }
             composable<MainRoute.CreatePost> {
@@ -145,6 +147,7 @@ fun MainScreen(onSignOut: () -> Unit, inboxViewModel: ConversationsViewModel = h
             composable<MainRoute.AccountInfo> { AccountInfoScreen(onBack = { navController.popBackStack() }) }
             composable<MainRoute.NotificationSettings> { NotificationSettingsScreen(onBack = { navController.popBackStack() }) }
             composable<MainRoute.Privacy> { PrivacyScreen(onBack = { navController.popBackStack() }) }
+            composable<MainRoute.Events> { EventsScreen(onBack = { navController.popBackStack() }) }
             composable<MainRoute.Premium> { PremiumScreen(onBack = { navController.popBackStack() }) }
         }
     }

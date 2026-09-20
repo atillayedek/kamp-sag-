@@ -59,3 +59,12 @@ silinir; kullanıcının tüm verisi `ON DELETE CASCADE` ile gider.
 `supabase/tests/*.sql` gerçek veritabanında tek transaction'da çalışır ve `ROLLBACK` ile biter (kalıcı veri bırakmaz):
 `001_verification_rules.sql` (onay akışı, profil koruması, hesap silme zinciri), `002_community_rules.sql` (gönderi/beğeni/yorum kuralları, sayaçlar).
 Çalıştırma: Supabase SQL Editor'a yapıştırın veya MCP `execute_sql`. Başarısızlıkta `FAIL: ...` istisnası fırlar; başarıda `TÜM DOĞRULAMALAR GEÇTİ` döner.
+
+## Etkinlik ekleme
+
+Etkinlikler `campus_events` tablosundan gelir; yalnızca **moderatör/admin** (JWT `is_moderator`/`is_admin`) ekleyebilir (RLS). `university_id = null` → tüm üniversitelere açık; dolu → yalnızca o üniversite. Bitiş (`ends_at`) yoksa etkinlik başlangıçtan 3 saat sonra listeden düşer. Örnek (SQL editörü):
+
+```sql
+insert into public.campus_events (university_id, title, description, location, starts_at, ends_at)
+values (null, 'Kampüs Buluşması', 'Açıklama', 'Merkez Yemekhane', '2026-10-03 15:00+03', '2026-10-03 17:00+03');
+```
